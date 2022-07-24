@@ -8,13 +8,15 @@
 
 Blender addon to change the rotation mode of a bone while preserving the current poses.
 
-** Requires [Copy Global Transform addon](https://wiki.blender.org/wiki/Reference/Release_Notes/3.1/Add-ons#Copy_Global_Transform)**, shipped with Blender since v3.1.0.
+**Requires [Copy Global Transform addon](https://wiki.blender.org/wiki/Reference/Release_Notes/3.1/Add-ons#Copy_Global_Transform), shipped with Blender since v3.1.0.**
 
-**Work in progress, use at your own risk!**
+**⚠️ Work in progress, use at your own risk! ⚠️**
 
 ## Recommanded Rotation Modes:
 
 These are merely suggestions, may vary from one rig to another or even from one animation to another.
+
+Note that there are two main coordinates system for bones. Blender uses Y down, as well as Maya, and 3DS uses X down.
 
 ### For Y down coordinates (Blender):
 
@@ -31,7 +33,7 @@ These are merely suggestions, may vary from one rig to another or even from one 
 - neck: yxz
 - head: yxz
 
-### For X down coordinates (non Blender)
+### For X down coordinates
 
 - COG: zxy
 - Hip: zxy
