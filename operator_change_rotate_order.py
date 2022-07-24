@@ -19,15 +19,15 @@ class Animation_OT_changeRotateOrder(bpy.types.Operator):
         return context.active_object is not None
 
     activeBone = bpy.context.active_pose_bone
-    newRorder = "YXZ"
+    targetRmode = "YXZ"
 
-    oldRorder = activeBone.rotation_mode
+    currentRmode = activeBone.rotation_mode
 #    print ("Current rotation mode for:")
 #    print (str(activeBone))
-#    print ("is: " + oldRorder)
+#    print ("is: " + currentRmode)
 #    print ( )
 #    print ("New rotate order will be:")
-#    print (newRorder)
+#    print (targetRmode)
     
     if bpy.context.object.mode == 'POSE':
 
@@ -55,8 +55,8 @@ class Animation_OT_changeRotateOrder(bpy.types.Operator):
 #        
 #        for object in selectedObj:
 #            print (object.rotation_mode)
-#            oldRorder = object.rotation_mode
-#            print ("Current rotation mode for " + str(object) + " is: " + oldRorder)
+#            currentRmode = object.rotation_mode
+#            print ("Current rotation mode for " + str(object) + " is: " + currentRmode)
 #            object.rotation_mode = 'XYZ'
 #            bpy.ops.object.copy_global_transform()
 #            object.rotation_mode = 'YXZ'
