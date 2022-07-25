@@ -84,12 +84,12 @@ class OBJECT_OT_convert_rotation_mode(Operator):
     #     return(originalRmode)
 
     def _refresh_3d_panels():
-    refresh_area_types = {'VIEW_3D'}
-    for win in bpy.context.window_manager.windows:
-        for area in win.screen.areas:
-            if area.type not in refresh_area_types:
-                continue
-            area.tag_redraw()
+        refresh_area_types = {'VIEW_3D'}
+        for win in bpy.context.window_manager.windows:
+            for area in win.screen.areas:
+                if area.type not in refresh_area_types:
+                    continue
+                area.tag_redraw()
 
     def execute(self, context):
         scene = context.scene
@@ -140,14 +140,17 @@ class VIEW3D_PT_convert_rotation_mode(ConvertRotationOrderPanel, Panel):
         scene = context.scene
         allRmodes = scene.allRmodes
 
-        row = layout.row()
-        row.label(text="Target Rotation Mode")
+        has_autokey = scene.tool_settings.use_keyframe_insert_auto
+        col = layout.column(align=True)
+        # autokey_row = col.layout.column(align=True)
+        # autokey_row.enabled = has_autokey
 
-        row = layout.row()                                             
-        row.prop(allRmodes, "targetRmode", text="")
+        col.label(text="Target Rotation Mode")                                        
+        col.prop(allRmodes, "targetRmode", text="")
 
-        row = layout.row()
-        row.operator("object.convert_rotation_mode", text="Convert!")
+        if not has_autokey:
+            col.label(text="Please turn on Auto-Keying!", icon="ERROR")
+        col.operator("object.convert_rotation_mode", text="Convert!")
 
 #####################################################################
 #                      ADDON PREFERENCES
