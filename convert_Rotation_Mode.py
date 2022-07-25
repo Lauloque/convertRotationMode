@@ -1,7 +1,7 @@
 bl_info = {
     "name": "Convert Rotation Mode",
     "author": "Loïc \"L0Lock\" Dautry",
-    "version": (0, 0, 1),
+    "version": (0, 0, 2),
     "blender": (3, 1, 0),
     "location": "3D Viewport → Sidebar → Animation Tab",
     "category": "Animation",
@@ -76,11 +76,24 @@ class OBJECT_OT_convert_rotation_mode(Operator):
             return False
         return True
 
+    # def get_originalRmode(currentBone):
+    #     self.report({"INFO"}, currentBone.name + " Rmode is " + currentBone.rotation_mode)
+    #     originalRmode = currentBone.rotation_mode
+    #     currentBone.rotation_mode = originalRmode
+
+    #     return(originalRmode)
+
+    def _refresh_3d_panels():
+    refresh_area_types = {'VIEW_3D'}
+    for win in bpy.context.window_manager.windows:
+        for area in win.screen.areas:
+            if area.type not in refresh_area_types:
+                continue
+            area.tag_redraw()
 
     def execute(self, context):
         scene = context.scene
-        myTool = scene.myTool
-        self.report({"INFO"}, "Target Rmode will be " + myTool.targetRmode)
+        allRmodes = scene.allRmodes
 
         if bpy.context.object.mode == 'POSE':
 
@@ -89,23 +102,25 @@ class OBJECT_OT_convert_rotation_mode(Operator):
             for currentBone in listBones:
                 bpy.ops.pose.select_all(action='DESELECT')
                 currentBone.bone.select = True
-                print(currentBone)
+                # get_originalRmode(currentBone)
                 self.report({"INFO"}, currentBone.name + " Rmode is " + currentBone.rotation_mode)
-                print(currentBone.rotation_mode)
+                originalRmode = currentBone.rotation_mode
+                currentBone.rotation_mode = originalRmode
+                if targetRmode == "QUATERNION" or "AXIS_ANGLE":
+                    self.refresh_3d_panels
+                    bpy.ops.screen.animation_play(reverse=True)
+                    bpy.ops.screen.animation_play(reverse=False)
+                bpy.ops.object.copy_global_transform()
+                currentBone.rotation_mode = allRmodes.targetRmode
+                bpy.ops.object.paste_transform(method='CURRENT')
+
+
+
+        self.report({"INFO"}, "Target Rmode will be " + allRmodes.targetRmode)
+
+
 
         return{'FINISHED'}
-
-    # def get_currentRmode(self, context):
-    #     if bpy.context.object.mode == 'POSE':
-
-    #         listBones = bpy.context.selected_pose_bones
-            
-    #         for currentBone in listBones:
-    #             bpy.ops.pose.select_all(action='DESELECT')
-    #             currentBone.bone.select = True
-    #             self.report({"INFO"}, 
-    #                 currentBone + " Rmode is " + currentBone.rotation_mode)
-    #     return{'FINISHED'}
 
 #####################################################################
 #                      SIDEBAR PANEL UI
@@ -123,13 +138,13 @@ class VIEW3D_PT_convert_rotation_mode(ConvertRotationOrderPanel, Panel):
 
         obj = context.object
         scene = context.scene
-        myTool = scene.myTool
+        allRmodes = scene.allRmodes
 
         row = layout.row()
         row.label(text="Target Rotation Mode")
 
         row = layout.row()                                             
-        row.prop(myTool, "targetRmode", text="")
+        row.prop(allRmodes, "targetRmode", text="")
 
         row = layout.row()
         row.operator("object.convert_rotation_mode", text="Convert!")
@@ -191,10 +206,10 @@ classes = (
 def register():
     for cls in classes:
         bpy.utils.register_class(cls)
-    bpy.types.Scene.myTool = bpy.props.PointerProperty(type=RmodesProperties)
+    bpy.types.Scene.allRmodes = bpy.props.PointerProperty(type=RmodesProperties)
 
 
 def unregister():
     for cls in classes:
         bpy.utils.unregister_class(cls)
-    del bpy.types.Scene.myTool
+    del bpy.types.Scene.allRmodes
