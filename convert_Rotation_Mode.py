@@ -13,7 +13,7 @@ bl_info = {
 
 import bpy
 from bpy.props import (
-    StringProperty, EnumProperty,
+    StringProperty, EnumProperty, BoolProperty,
 )
 from bpy.types import (
     Context,  Object,
@@ -22,11 +22,11 @@ from bpy.types import (
     AddonPreferences, 
     )
 
-class RmodesProperties(PropertyGroup):
+class ConvertRotaitonMode_Properties(PropertyGroup):
 ##################################################
-# Lists all rotation modes for the UI
-
-    targetRmode: bpy.props.EnumProperty(
+    
+    # Lists all rotation modes for the UI
+    targetRmode: EnumProperty(
         name='Target Rotation Mode',
         description='Target Rotation Mode for the convertion.',
         items=[
@@ -41,6 +41,11 @@ class RmodesProperties(PropertyGroup):
             ],
         default='XYZ'
         ) 
+
+    # dev mode boolean
+    # dev_mode: BoolProperty(
+    #     name="Developer Mode",
+    #     default= False)
 
 
 class ConvertRotationOrderPanel:
@@ -95,7 +100,8 @@ class OBJECT_OT_convert_rotation_mode(Operator):
 
     def execute(self, context):
         scene = context.scene
-        allRmodes = scene.allRmodes
+        CRM_Properties = scene.CRM_Properties
+        dev_mode = True
 
         if bpy.context.object.mode == 'POSE':
 
@@ -105,27 +111,35 @@ class OBJECT_OT_convert_rotation_mode(Operator):
                 bpy.ops.pose.select_all(action='DESELECT')
                 bpy.context.object.data.bones.active = currentBone.bone
                 currentBone.bone.select = True
-                print("Working on bone ", currentBone)
-                # get_originalRmode(currentBone)
-                self.report({"INFO"}, currentBone.name + " Rmode is " + currentBone.rotation_mode)
+                if dev_mode == True: ###### DEV OUTPUT
+                    print("### Working on bone ", currentBone.name, " ###")
+                    print("Target Rmode will be", CRM_Properties.targetRmode)
                 originalRmode = currentBone.rotation_mode
                 currentBone.rotation_mode = originalRmode
-                if allRmodes.targetRmode == "QUATERNION" or "AXIS_ANGLE":
+                if dev_mode == True: ###### DEV OUTPUT
+                    print(currentBone.name, " Rmode set to original ", originalRmode)
+                if CRM_Properties.targetRmode == "QUATERNION" or CRM_Properties.targetRmode == "AXIS_ANGLE":
+                    if dev_mode == True: ###### DEV OUTPUT
+                        print("Refreshing Viewport because of 4-axes targetRmode...")
                     self._refresh_3d_panels
                     bpy.ops.screen.animation_play(reverse=True)
                     bpy.ops.screen.animation_play(reverse=False)
                 bpy.ops.object.copy_global_transform()
-                currentBone.rotation_mode = allRmodes.targetRmode
+                if dev_mode == True: ###### DEV OUTPUT
+                    print("Copied ", currentBone.name, " Global Transform")
+                currentBone.rotation_mode = CRM_Properties.targetRmode
+                if dev_mode == True: ###### DEV OUTPUT
+                    print("Rmode set to ", CRM_Properties.targetRmode)
                 bpy.ops.object.paste_transform(method='CURRENT')
+                if dev_mode == True: ###### DEV OUTPUT
+                    print("Pasted ", currentBone.name, " Global Transform")
+                    print("Done working on ", currentBone.name, " moving to next one! \n \n")
 
-
-
-        self.report({"INFO"}, "Target Rmode will be " + allRmodes.targetRmode)
+        self.report({"INFO"}, "Successfully converted to " + CRM_Properties.targetRmode)
 
 
 
         return{'FINISHED'}
-    self.report({"INFO"}, "Successfully converted to "allRmodes.targetRmode)
 
 # remove following 'ConvertRotationOrderPanel' once addon functional outside pose mode.
 class VIEW3D_PT_convert_rotation_mode(ConvertRotationOrderPanel, Panel):
@@ -142,7 +156,7 @@ class VIEW3D_PT_convert_rotation_mode(ConvertRotationOrderPanel, Panel):
 
         obj = context.object
         scene = context.scene
-        allRmodes = scene.allRmodes
+        CRM_Properties = scene.CRM_Properties
 
         has_autokey = scene.tool_settings.use_keyframe_insert_auto
         col = layout.column(align=True)
@@ -150,7 +164,7 @@ class VIEW3D_PT_convert_rotation_mode(ConvertRotationOrderPanel, Panel):
         # autokey_row.enabled = has_autokey
 
         col.label(text="Target Rotation Mode")                                        
-        col.prop(allRmodes, "targetRmode", text="")
+        col.prop(CRM_Properties, "targetRmode", text="")
 
         if not has_autokey:
             col.label(text="Please turn on Auto-Keying!", icon="ERROR")
@@ -186,6 +200,9 @@ class AddonPreferences(AddonPreferences):
     # this must match the addon name, use '__package__'
     # when defining this in a submodule of a python package.
     bl_idname = __name__
+    # CRM_Properties = bpy.context.scene.CRM_Properties
+
+    # dev_mode: BoolProperty(name="Developer Mode",default= False)
 
     category: StringProperty(
             name="Tab Category",
@@ -199,12 +216,13 @@ class AddonPreferences(AddonPreferences):
 
         row = layout.row()
         col = row.column()
-        col.label(text="Tab Category:")
-        col.prop(self, "category", text="")
+        # col.label(text="Tab Category:")
+        col.prop(self, "category")
+        # col.prop(CRM_Properties, "dev_mode")
 
 
 classes = (
-    RmodesProperties,
+    ConvertRotaitonMode_Properties,
     OBJECT_OT_convert_rotation_mode,
     VIEW3D_PT_convert_rotation_mode,
     AddonPreferences,
@@ -214,10 +232,10 @@ classes = (
 def register():
     for cls in classes:
         bpy.utils.register_class(cls)
-    bpy.types.Scene.allRmodes = bpy.props.PointerProperty(type=RmodesProperties)
+    bpy.types.Scene.CRM_Properties = bpy.props.PointerProperty(type=ConvertRotaitonMode_Properties)
 
 
 def unregister():
     for cls in classes:
         bpy.utils.unregister_class(cls)
-    del bpy.types.Scene.allRmodes
+    del bpy.types.Scene.CRM_Properties
