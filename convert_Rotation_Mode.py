@@ -101,13 +101,15 @@ class OBJECT_OT_convert_rotation_mode(Operator):
             
             for currentBone in listBones:
                 bpy.ops.pose.select_all(action='DESELECT')
+                bpy.context.object.data.bones.active = currentBone.bone
                 currentBone.bone.select = True
+                print("Working on bone ", currentBone)
                 # get_originalRmode(currentBone)
                 self.report({"INFO"}, currentBone.name + " Rmode is " + currentBone.rotation_mode)
                 originalRmode = currentBone.rotation_mode
                 currentBone.rotation_mode = originalRmode
-                if targetRmode == "QUATERNION" or "AXIS_ANGLE":
-                    self.refresh_3d_panels
+                if allRmodes.targetRmode == "QUATERNION" or "AXIS_ANGLE":
+                    self._refresh_3d_panels
                     bpy.ops.screen.animation_play(reverse=True)
                     bpy.ops.screen.animation_play(reverse=False)
                 bpy.ops.object.copy_global_transform()
