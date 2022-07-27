@@ -1,7 +1,7 @@
 bl_info = {
     "name": "Convert Rotation Mode",
     "author": "Loïc \"L0Lock\" Dautry",
-    "version": (0, 0, 2),
+    "version": (0, 0, 3),
     "blender": (3, 1, 0),
     "location": "3D Viewport → Sidebar → Animation Tab",
     "category": "Animation",
@@ -23,6 +23,8 @@ from bpy.types import (
     )
 
 class RmodesProperties(PropertyGroup):
+##################################################
+# Lists all rotation modes for the UI
 
     targetRmode: bpy.props.EnumProperty(
         name='Target Rotation Mode',
@@ -40,13 +42,11 @@ class RmodesProperties(PropertyGroup):
         default='XYZ'
         ) 
 
-"""
-##################################################
-Check if Pose mode, for drawing panel
-##################################################
-"""
 
 class ConvertRotationOrderPanel:
+##################################################
+# Check if Pose mode, for drawing panel
+
     @classmethod
     def convert_rotation_mode_panel_poll(cls, context: Context) -> bool:
         return bool(
@@ -59,6 +59,8 @@ class ConvertRotationOrderPanel:
         return cls.convert_rotation_mode_panel_poll(context);
 
 class OBJECT_OT_convert_rotation_mode(Operator):
+##################################################
+# Main Conversion Operator
     bl_idname = "object.convert_rotation_mode"
     bl_label = "Convert Rotation Mode"
     bl_description = "Convert the selected bone's rotation order on all keyframes."
@@ -123,13 +125,13 @@ class OBJECT_OT_convert_rotation_mode(Operator):
 
 
         return{'FINISHED'}
-
-#####################################################################
-#                      SIDEBAR PANEL UI
-#####################################################################
+    self.report({"INFO"}, "Successfully converted to "allRmodes.targetRmode)
 
 # remove following 'ConvertRotationOrderPanel' once addon functional outside pose mode.
 class VIEW3D_PT_convert_rotation_mode(ConvertRotationOrderPanel, Panel):
+##################################################
+# Sidebar UI
+
     bl_space_type = 'VIEW_3D'
     bl_region_type = 'UI'
     bl_category = "Animation"
@@ -154,9 +156,10 @@ class VIEW3D_PT_convert_rotation_mode(ConvertRotationOrderPanel, Panel):
             col.label(text="Please turn on Auto-Keying!", icon="ERROR")
         col.operator("object.convert_rotation_mode", text="Convert!")
 
-#####################################################################
-#                      ADDON PREFERENCES
-#####################################################################
+
+##################################################
+# Addon's preferences
+
 # Define Panel classes for updating
 panels = (
         VIEW3D_PT_convert_rotation_mode,
