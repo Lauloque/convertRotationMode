@@ -184,7 +184,7 @@ class CRM_OT_convert_rotation_mode(Operator):
 # remove following 'ConvertRotationOrderPanel' once addon functional outside pose mode.
 class VIEW3D_PT_convert_rotation_mode(ConvertRotationOrderPanel, Panel):
 ##################################################
-# Sidebar UI
+# Sidebar Main UI
 
     bl_space_type = 'VIEW_3D'
     bl_region_type = 'UI'
@@ -209,6 +209,62 @@ class VIEW3D_PT_convert_rotation_mode(ConvertRotationOrderPanel, Panel):
         if not has_autokey:
             col.label(text="Please turn on Auto-Keying!", icon="ERROR")
         col.operator("crm.convert_rotation_mode", text="Convert!")
+
+class VIEW3D_PT_Rmodes_recommandations(Panel):##################################################
+# Rmodes recommandations subpanel
+    bl_space_type = 'VIEW_3D'
+    bl_region_type = 'UI'
+    bl_category = "Animation"
+    bl_parent_id = "VIEW3D_PT_convert_rotation_mode"
+    bl_label = "Rotation Modes Cheat Sheet"
+    bl_options = {'DEFAULT_CLOSED'}
+
+    def draw(self, context):
+        layout = self.layout
+
+        grid = layout.grid_flow(columns=3, align=True, even_columns=True)
+        grid.label(text="")
+        grid.label(text="COG")
+        grid.label(text="Hip")
+        grid.label(text="Leg")
+        grid.label(text="Shoulders")
+        grid.label(text="Arm Upper")
+        grid.label(text="Arm Lower")
+        grid.label(text="Wrist")
+        grid.label(text="Fingers")
+        grid.label(text="Spine Base")
+        grid.label(text="Spine Mid")
+        grid.label(text="Chest")
+        grid.label(text="Neck")
+        grid.label(text="Head")
+        grid.label(text="# Y Down (Blender)")
+        grid.label(text="ZXY")
+        grid.label(text="YZX")
+        grid.label(text="ZXY")
+        grid.label(text="YZX")
+        grid.label(text="YXZ")
+        grid.label(text="ZYX (or YZX)")
+        grid.label(text="ZYX (or YZX)")
+        grid.label(text="YZX")
+        grid.label(text="ZXY")
+        grid.label(text="YZX")
+        grid.label(text="ZXY")
+        grid.label(text="YXZ")
+        grid.label(text="YXZ")
+        grid.label(text="# X Down (not Blender)")
+        grid.label(text="ZXY")
+        grid.label(text="ZXY")
+        grid.label(text="XZY")
+        grid.label(text="XYZ")
+        grid.label(text="ZXY")
+        grid.label(text="ZXY")
+        grid.label(text="XYZ (or YZX)")
+        grid.label(text="YZX")
+        grid.label(text="ZXY")
+        grid.label(text="XZY")
+        grid.label(text="ZXY")
+        grid.label(text="YXZ")
+        grid.label(text="YXZ")
 
 
 ##################################################
@@ -275,12 +331,8 @@ class AddonPreferences(AddonPreferences, Panel):
     def draw(self, context):
         layout = self.layout
 
-        row = layout.row()
-        col = row.column()
+        col = layout.row.column()
 
-        # col.label(text="Tab Category:")
-        # col.prop(self, "category")
-        # col.prop(CRM_Properties, "dev_mode")
         grid = layout.grid_flow(columns=2, align=True)
         grid.prop(self, "category")
         grid.prop(self, "devMode")
@@ -294,6 +346,7 @@ classes = (
     CRM_Props,
     CRM_OT_convert_rotation_mode,
     VIEW3D_PT_convert_rotation_mode,
+    VIEW3D_PT_Rmodes_recommandations,
     AddonPreferences,
 )
 
