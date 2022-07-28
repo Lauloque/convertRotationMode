@@ -11,7 +11,7 @@ bl_info = {
     "tracker_url": "https://github.com/L0Lock/convertRotationMode/issues",
 }
 
-import bpy
+import bpy, re
 from bpy.props import (
     StringProperty, EnumProperty, BoolProperty,
 )
@@ -21,6 +21,9 @@ from bpy.types import (
     PoseBone, PropertyGroup,
     AddonPreferences, 
     )
+
+dev_mode = True
+C = bpy.context
 
 class ConvertRotaitonMode_Properties(PropertyGroup):
 ##################################################
@@ -83,58 +86,114 @@ class OBJECT_OT_convert_rotation_mode(Operator):
             return False
         return True
 
-    # def get_originalRmode(currentBone):
+    # def get_originalRmode(self, currentBone):
     #     self.report({"INFO"}, currentBone.name + " Rmode is " + currentBone.rotation_mode)
     #     originalRmode = currentBone.rotation_mode
     #     currentBone.rotation_mode = originalRmode
 
     #     return(originalRmode)
 
-    def _refresh_3d_panels():
+    def _refresh_3d_panels(self):
         refresh_area_types = {'VIEW_3D'}
-        for win in bpy.context.window_manager.windows:
+        for win in C.window_manager.windows:
             for area in win.screen.areas:
                 if area.type not in refresh_area_types:
                     continue
                 area.tag_redraw()
+        bpy.ops.screen.animation_play(reverse=True)
+        bpy.ops.screen.animation_play(reverse=False)
+
+    def get_fcs(self, obj):
+        try:    return obj.animation_data.action.fcurves
+        except: return None
+
+    def get_keyed_frames(self):
+        fcs = self.get_fcs(C.object)
+
+        if fcs is None:
+            print("No animation_data / invalid object")
+            return None
+
+        ARRAY = []
+        
+        for fc in fcs:
+            bone_name = fc.data_path
+            index = fc.array_index
+
+            ### EXTRACT BONES PATHS FROM FCURVES
+            if bone_name[: 10] != "pose.bones": continue
+            ### EXTRACT BONE NAMES FROM BONES PATHS
+            try:
+                bone_name = re.search('pose.bones\["(.+?)\"].', bone_name).group(1)
+            except AttributeError:
+                bone_name = "search failed!"
+            ### BUILD 
+            ARRAY.append({
+                "bone_name": bone_name,
+                "keyed_frames": [kp.co[0] for kp in fc.keyframe_points]
+            })
+            
+            #### CLEANUP DUPLICATES
+            keyed_frames_list = [] 
+            for i in ARRAY: 
+                if i not in keyed_frames_list: 
+                    keyed_frames_list.append(i) 
+            
+        if ARRAY is None and dev_mode == True:
+            print("Failed to get list of Bones")
+
+        return keyed_frames_list
 
     def execute(self, context):
         scene = context.scene
         CRM_Properties = scene.CRM_Properties
-        dev_mode = True
 
-        if bpy.context.object.mode == 'POSE':
+        listBones = C.selected_pose_bones
+        keyed_frames_list = self.get_keyed_frames()
+        
+        for currentBone in listBones:
+            bpy.ops.pose.select_all(action='DESELECT')
+            C.object.data.bones.active = currentBone.bone
+            currentBone.bone.select = True
+            if dev_mode == True: ###### DEV OUTPUT
+                print("### Working on bone ", currentBone.name, " ###")
+                print("Target Rmode will be", CRM_Properties.targetRmode)
+            originalRmode = currentBone.rotation_mode
+            ################################## START OF FRAME CYCLE
+            for bName in keyed_frames_list:
+                if bName["bone_name"] == C.active_bone.name:
+                    print("########  Using keyed_frames_list of",bName["bone_name"],"  ########")
+                    for KdFrame in bName["keyed_frames"]:
+                        C.scene.frame_current = int(KdFrame)
+                        if dev_mode == True: ###### DEV OUTPUT
+                            print('jumped to frame ', int(KdFrame))
 
-            listBones = bpy.context.selected_pose_bones
-            
-            for currentBone in listBones:
-                bpy.ops.pose.select_all(action='DESELECT')
-                bpy.context.object.data.bones.active = currentBone.bone
-                currentBone.bone.select = True
-                if dev_mode == True: ###### DEV OUTPUT
-                    print("### Working on bone ", currentBone.name, " ###")
-                    print("Target Rmode will be", CRM_Properties.targetRmode)
-                originalRmode = currentBone.rotation_mode
-                currentBone.rotation_mode = originalRmode
-                if dev_mode == True: ###### DEV OUTPUT
-                    print(currentBone.name, " Rmode set to original ", originalRmode)
-                if CRM_Properties.targetRmode == "QUATERNION" or CRM_Properties.targetRmode == "AXIS_ANGLE":
-                    if dev_mode == True: ###### DEV OUTPUT
-                        print("Refreshing Viewport because of 4-axes targetRmode...")
-                    self._refresh_3d_panels
-                    bpy.ops.screen.animation_play(reverse=True)
-                    bpy.ops.screen.animation_play(reverse=False)
-                bpy.ops.object.copy_global_transform()
-                if dev_mode == True: ###### DEV OUTPUT
-                    print("Copied ", currentBone.name, " Global Transform")
-                currentBone.rotation_mode = CRM_Properties.targetRmode
-                if dev_mode == True: ###### DEV OUTPUT
-                    print("Rmode set to ", CRM_Properties.targetRmode)
-                bpy.ops.object.paste_transform(method='CURRENT')
-                if dev_mode == True: ###### DEV OUTPUT
-                    print("Pasted ", currentBone.name, " Global Transform")
-                    print("Done working on ", currentBone.name, " moving to next one! \n \n")
+                        currentBone.rotation_mode = originalRmode
+                        if dev_mode == True: ###### DEV OUTPUT
+                            print(currentBone.name, " Rmode set to original ", originalRmode)
 
+                        # if CRM_Properties.targetRmode == "QUATERNION" or CRM_Properties.targetRmode == "AXIS_ANGLE":
+                        #     if dev_mode == True: ###### DEV OUTPUT
+                        #         print("Refreshing Viewport because of 4-axes targetRmode...")
+                        #         self._refresh_3d_panels
+
+                        bpy.ops.object.copy_global_transform()
+                        if dev_mode == True: ###### DEV OUTPUT
+                            print("Copied ", currentBone.name, " Global Transform")
+
+                        currentBone.rotation_mode = CRM_Properties.targetRmode
+                        if dev_mode == True: ###### DEV OUTPUT
+                            print("Rmode set to ", CRM_Properties.targetRmode)
+                            
+                        bpy.ops.object.paste_transform(method='CURRENT')
+                        if dev_mode == True: ###### DEV OUTPUT
+                            print("Pasted ", currentBone.name, " Global Transform")
+                            print("Done working on ", currentBone.name, " moving to next one! \n \n")
+                    break
+                else:
+                    if dev_mode == True:###### DEV OUTPUT
+                        print("List for ", bName["bone_name"], " doesn't match bone ", C.active_bone.name)
+        
         self.report({"INFO"}, "Successfully converted to " + CRM_Properties.targetRmode)
 
 
@@ -200,7 +259,7 @@ class AddonPreferences(AddonPreferences):
     # this must match the addon name, use '__package__'
     # when defining this in a submodule of a python package.
     bl_idname = __name__
-    # CRM_Properties = bpy.context.scene.CRM_Properties
+    # CRM_Properties = C.scene.CRM_Properties
 
     # dev_mode: BoolProperty(name="Developer Mode",default= False)
 
