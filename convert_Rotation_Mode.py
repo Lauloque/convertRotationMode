@@ -22,10 +22,10 @@ from bpy.types import (
     AddonPreferences, 
     )
 
-dev_mode = True
+dev_mode = False
 C = bpy.context
 
-class ConvertRotaitonMode_Properties(PropertyGroup):
+class CRM_Props(PropertyGroup):
 ##################################################
     
     # Lists all rotation modes for the UI
@@ -43,12 +43,7 @@ class ConvertRotaitonMode_Properties(PropertyGroup):
             ("QUATERNION", "Quaternion (WXYZ)", "Quaternion (WXYZ) – No Gimbal Lock but awful for animators in Graph Editor."),
             ],
         default='XYZ'
-        ) 
-
-    # dev mode boolean
-    # dev_mode: BoolProperty(
-    #     name="Developer Mode",
-    #     default= False)
+        )
 
 
 class ConvertRotationOrderPanel:
@@ -152,7 +147,8 @@ class CRM_OT_convert_rotation_mode(Operator):
             ################################## START OF FRAME CYCLE
             for bName in keyed_frames_list:
                 if bName["bone_name"] == C.active_bone.name:
-                    print("########  Using keyed_frames_list of",bName["bone_name"],"  ########")
+                    if dev_mode == True: ###### DEV OUTPUT
+                        print("########  Using keyed_frames_list of",bName["bone_name"],"  ########")
                     for KdFrame in bName["keyed_frames"]:
                         C.scene.frame_current = int(KdFrame)
                         if dev_mode == True: ###### DEV OUTPUT
@@ -225,7 +221,7 @@ panels = (
 
 
 def update_panel(self, context):
-    message = "Align Tools: Updating Panel locations has failed"
+    message = "Convert Rotation Mode: Updating Panel locations has failed"
     try:
         for panel in panels:
             if "bl_rna" in panel.__dict__:
@@ -239,7 +235,17 @@ def update_panel(self, context):
         print("\n[{}]\n{}\n\nError:\n{}".format(__name__, message, e))
         pass
 
-class CRM_OT_enableAddon(bpy.types.Operator):
+def update_devMode(self, context):
+    message = "Convert Rotation Mode: Toggling dev mode has failed"
+    try:
+        globals()['dev_mode'] = context.preferences.addons[__name__].preferences.devMode
+        print('dev_mode toggled')
+
+    except Exception as e:
+        print("\n[{}]\n{}\n\nError:\n{}".format(__name__, message, e))
+        pass
+
+class CRM_OT_enableAddon(Operator):
     bl_idname = 'crm.enable_addon'
     bl_label = "Enable \"Copy Gloabl Transform\""
     bl_options = {'REGISTER', 'UNDO'}
@@ -247,13 +253,17 @@ class CRM_OT_enableAddon(bpy.types.Operator):
         bpy.ops.preferences.addon_enable(module="copy_global_transform")
         return{'FINISHED'}
 
-class AddonPreferences(AddonPreferences):
+class AddonPreferences(AddonPreferences, Panel):
     # this must match the addon name, use '__package__'
     # when defining this in a submodule of a python package.
     bl_idname = __name__
-    # CRM_Properties = C.scene.CRM_Properties
 
-    # dev_mode: BoolProperty(name="Developer Mode",default= False)
+    devMode: BoolProperty(
+        name="Developer Mode",
+        description='Enables all error tracking messages.',
+        default= False,
+        update=update_devMode
+        )
 
     category: StringProperty(
             name="Tab Category",
@@ -267,9 +277,13 @@ class AddonPreferences(AddonPreferences):
 
         row = layout.row()
         col = row.column()
+
         # col.label(text="Tab Category:")
-        col.prop(self, "category")
+        # col.prop(self, "category")
         # col.prop(CRM_Properties, "dev_mode")
+        grid = layout.grid_flow(columns=2, align=True)
+        grid.prop(self, "category")
+        grid.prop(self, "devMode")
 
         if C.preferences.addons.find("copy_global_transform") == -1:
             col.label(text="This addon requires the addon \"Copy Gloabl Transform\" by Sybren A. Stüvel.", icon="ERROR")
@@ -277,7 +291,7 @@ class AddonPreferences(AddonPreferences):
 
 
 classes = (
-    ConvertRotaitonMode_Properties,
+    CRM_Props,
     CRM_OT_convert_rotation_mode,
     VIEW3D_PT_convert_rotation_mode,
     AddonPreferences,
@@ -287,7 +301,7 @@ classes = (
 def register():
     for cls in classes:
         bpy.utils.register_class(cls)
-    bpy.types.Scene.CRM_Properties = bpy.props.PointerProperty(type=ConvertRotaitonMode_Properties)
+    bpy.types.Scene.CRM_Properties = bpy.props.PointerProperty(type=CRM_Props)
 
 
 def unregister():
