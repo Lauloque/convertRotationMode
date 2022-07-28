@@ -239,6 +239,13 @@ def update_panel(self, context):
         print("\n[{}]\n{}\n\nError:\n{}".format(__name__, message, e))
         pass
 
+class CRM_OT_enableAddon(bpy.types.Operator):
+    bl_idname = 'crm.enable_addon'
+    bl_label = "Enable \"Copy Gloabl Transform\""
+    bl_options = {'REGISTER', 'UNDO'}
+    def execute(self,context):
+        bpy.ops.preferences.addon_enable(module="copy_global_transform")
+        return{'FINISHED'}
 
 class AddonPreferences(AddonPreferences):
     # this must match the addon name, use '__package__'
@@ -263,6 +270,10 @@ class AddonPreferences(AddonPreferences):
         # col.label(text="Tab Category:")
         col.prop(self, "category")
         # col.prop(CRM_Properties, "dev_mode")
+
+        if C.preferences.addons.find("copy_global_transform") == -1:
+            col.label(text="This addon requires the addon \"Copy Gloabl Transform\" by Sybren A. Stüvel.", icon="ERROR")
+            col.operator("crm.enable_addon")
 
 
 classes = (
