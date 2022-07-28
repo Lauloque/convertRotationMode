@@ -66,10 +66,10 @@ class ConvertRotationOrderPanel:
     def poll(cls, context: Context) -> bool:
         return cls.convert_rotation_mode_panel_poll(context);
 
-class OBJECT_OT_convert_rotation_mode(Operator):
+class CRM_OT_convert_rotation_mode(Operator):
 ##################################################
 # Main Conversion Operator
-    bl_idname = "object.convert_rotation_mode"
+    bl_idname = "crm.convert_rotation_mode"
     bl_label = "Convert Rotation Mode"
     bl_description = "Convert the selected bone's rotation order on all keyframes."
     bl_options = {'REGISTER', 'UNDO'}
@@ -212,7 +212,7 @@ class VIEW3D_PT_convert_rotation_mode(ConvertRotationOrderPanel, Panel):
 
         if not has_autokey:
             col.label(text="Please turn on Auto-Keying!", icon="ERROR")
-        col.operator("object.convert_rotation_mode", text="Convert!")
+        col.operator("crm.convert_rotation_mode", text="Convert!")
 
 
 ##################################################
@@ -278,7 +278,7 @@ class AddonPreferences(AddonPreferences):
 
 classes = (
     ConvertRotaitonMode_Properties,
-    OBJECT_OT_convert_rotation_mode,
+    CRM_OT_convert_rotation_mode,
     VIEW3D_PT_convert_rotation_mode,
     AddonPreferences,
 )
