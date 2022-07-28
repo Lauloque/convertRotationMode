@@ -1,7 +1,7 @@
 bl_info = {
     "name": "Convert Rotation Mode",
     "author": "Loïc \"L0Lock\" Dautry",
-    "version": (0, 0, 3),
+    "version": (0, 0, 4),
     "blender": (3, 1, 0),
     "location": "3D Viewport → Sidebar → Animation Tab",
     "category": "Animation",
@@ -93,16 +93,6 @@ class OBJECT_OT_convert_rotation_mode(Operator):
 
     #     return(originalRmode)
 
-    def _refresh_3d_panels(self):
-        refresh_area_types = {'VIEW_3D'}
-        for win in C.window_manager.windows:
-            for area in win.screen.areas:
-                if area.type not in refresh_area_types:
-                    continue
-                area.tag_redraw()
-        bpy.ops.screen.animation_play(reverse=True)
-        bpy.ops.screen.animation_play(reverse=False)
-
     def get_fcs(self, obj):
         try:    return obj.animation_data.action.fcurves
         except: return None
@@ -172,11 +162,6 @@ class OBJECT_OT_convert_rotation_mode(Operator):
                         if dev_mode == True: ###### DEV OUTPUT
                             print(currentBone.name, " Rmode set to original ", originalRmode)
 
-                        # if CRM_Properties.targetRmode == "QUATERNION" or CRM_Properties.targetRmode == "AXIS_ANGLE":
-                        #     if dev_mode == True: ###### DEV OUTPUT
-                        #         print("Refreshing Viewport because of 4-axes targetRmode...")
-                        #         self._refresh_3d_panels
-
                         bpy.ops.object.copy_global_transform()
                         if dev_mode == True: ###### DEV OUTPUT
                             print("Copied ", currentBone.name, " Global Transform")
@@ -184,7 +169,7 @@ class OBJECT_OT_convert_rotation_mode(Operator):
                         currentBone.rotation_mode = CRM_Properties.targetRmode
                         if dev_mode == True: ###### DEV OUTPUT
                             print("Rmode set to ", CRM_Properties.targetRmode)
-                            
+
                         bpy.ops.object.paste_transform(method='CURRENT')
                         if dev_mode == True: ###### DEV OUTPUT
                             print("Pasted ", currentBone.name, " Global Transform")
