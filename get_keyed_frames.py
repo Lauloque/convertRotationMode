@@ -53,12 +53,12 @@ keyed_frames_list = get_keyed_frames()
 for A in keyed_frames_list:
     print("A = ", A["bone_name"])
     print("active bone is ", C.active_bone.name, "\n \n")
-    if A["bone_name"] != C.active_bone.name:
-        print("########  ",A["bone_name"],"  ########")
+    if A["bone_name"] == C.active_bone.name:
+        print("########  Using keyed_frames_list of",A["bone_name"],"  ########")
         for B in A["keyed_frames"]:
+            C.active_bone.keyframe_insert(data_path="hide", frame=int(B))
             C.scene.frame_current = int(B)
             print('jumped to frame ', int(B))
-            C.active_bone.keyframe_insert(data_path="hide", frame=int(B))
         break
         
         
