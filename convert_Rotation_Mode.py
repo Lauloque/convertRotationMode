@@ -337,14 +337,16 @@ class AddonPreferences(AddonPreferences, Panel):
         row.prop(self, "category")
         row.prop(self, "devMode")
 
+        row = layout.row()
         if C.preferences.addons.find("copy_global_transform") == -1:
-            col.label(text="This addon requires the addon \"Copy Gloabl Transform\" by Sybren A. Stüvel.", icon="ERROR")
-            col.operator("crm.enable_addon")
+            row.label(text="This addon requires the addon \"Copy Gloabl Transform\" by Sybren A. Stüvel.", icon="ERROR")
+            row.operator("crm.enable_addon")
 
 
 classes = (
     CRM_Props,
     CRM_OT_convert_rotation_mode,
+    CRM_OT_enableAddon,
     VIEW3D_PT_convert_rotation_mode,
     VIEW3D_PT_Rmodes_recommandations,
     AddonPreferences,
