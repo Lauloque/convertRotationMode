@@ -1,11 +1,11 @@
 bl_info = {
     "name": "Convert Rotation Mode",
     "author": "Loïc \"L0Lock\" Dautry",
-    "version": (0, 0, 4),
-    "blender": (3, 1, 0),
+    "version": (1, 0, 0),
+    "blender": (3, 2, 1),
     "location": "3D Viewport → Sidebar → Animation Tab",
     "category": "Animation",
-    "warning": "Work in progress, use at your own risk!",
+    "warning": "Requires the addon \"Copy Gloabl Transform\" available since Blender v3.1",
     "support": 'COMMUNITY',
     "doc_url": "https://github.com/L0Lock/convertRotationMode",
     "tracker_url": "https://github.com/L0Lock/convertRotationMode/issues",
@@ -46,7 +46,7 @@ class CRM_Props(PropertyGroup):
         )
 
 
-class ConvertRotationOrderPanel:
+class CRM_UI_PoseModeChecker:
 ##################################################
 # Check if Pose mode, for drawing panel
 
@@ -181,8 +181,8 @@ class CRM_OT_convert_rotation_mode(Operator):
 
         return{'FINISHED'}
 
-# remove following 'ConvertRotationOrderPanel' once addon functional outside pose mode.
-class VIEW3D_PT_convert_rotation_mode(ConvertRotationOrderPanel, Panel):
+# remove following 'CRM_UI_PoseModeChecker' once addon functional outside pose mode.
+class VIEW3D_PT_convert_rotation_mode(CRM_UI_PoseModeChecker, Panel):
 ##################################################
 # Sidebar Main UI
 
@@ -331,11 +331,11 @@ class AddonPreferences(AddonPreferences, Panel):
     def draw(self, context):
         layout = self.layout
 
-        col = layout.row.column()
+        row = layout.row()
+        col = row.column()
 
-        grid = layout.grid_flow(columns=2, align=True)
-        grid.prop(self, "category")
-        grid.prop(self, "devMode")
+        row.prop(self, "category")
+        row.prop(self, "devMode")
 
         if C.preferences.addons.find("copy_global_transform") == -1:
             col.label(text="This addon requires the addon \"Copy Gloabl Transform\" by Sybren A. Stüvel.", icon="ERROR")
