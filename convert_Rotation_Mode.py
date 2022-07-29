@@ -120,7 +120,10 @@ class CRM_OT_convert_rotation_mode(Operator):
 
         listBones = context.selected_pose_bones
 
-        keyed_frames_list = self.get_keyed_frames(context)          
+        keyed_frames_list = self.get_keyed_frames(context)
+        if keyed_frames_list is None:
+            self.report({"ERROR"}, "No animation found")
+            return {'CANCELLED'}            
         
         for currentBone in listBones:
             bpy.ops.pose.select_all(action='DESELECT')
