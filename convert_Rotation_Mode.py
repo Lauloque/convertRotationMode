@@ -70,23 +70,8 @@ class CRM_OT_convert_rotation_mode(Operator):
     bl_options = {'REGISTER', 'UNDO'}
 
     @classmethod
-    def poll(cls, context: Context) -> bool:
-        if not context.object.mode == 'POSE':
-            cls.poll_message_set("Requires to be in Pose Mode")
-            self.report({"WARNING"}, "Requires to be in Pose Mode")
-            return False
-        if not context.active_pose_bone:
-            cls.poll_message_set("Select a bone in Pose Mode")
-            self.report({"WARNING"}, "Select a bone in Pose Mode")
-            return False
-        return True
-
-    # def get_originalRmode(self, currentBone):
-    #     self.report({"INFO"}, currentBone.name + " Rmode is " + currentBone.rotation_mode)
-    #     originalRmode = currentBone.rotation_mode
-    #     currentBone.rotation_mode = originalRmode
-
-    #     return(originalRmode)
+    def poll(cls, context):
+        return context.selected_pose_bones
 
     def get_fcs(self, obj):
         try:    return obj.animation_data.action.fcurves
@@ -134,6 +119,7 @@ class CRM_OT_convert_rotation_mode(Operator):
         CRM_Properties = scene.CRM_Properties
 
         listBones = C.selected_pose_bones
+
         keyed_frames_list = self.get_keyed_frames()
         
         for currentBone in listBones:
@@ -199,9 +185,8 @@ class VIEW3D_PT_convert_rotation_mode(CRM_UI_PoseModeChecker, Panel):
         CRM_Properties = scene.CRM_Properties
 
         has_autokey = scene.tool_settings.use_keyframe_insert_auto
+
         col = layout.column(align=True)
-        # autokey_row = col.layout.column(align=True)
-        # autokey_row.enabled = has_autokey
 
         col.label(text="Target Rotation Mode")                                        
         col.prop(CRM_Properties, "targetRmode", text="")
