@@ -51,7 +51,7 @@ class CRM_UI_PoseModeChecker:
 # Check if Pose mode, for drawing panel
 
     @classmethod
-    def convert_rotation_mode_panel_poll(cls, context: Context) -> bool:
+    def crm_panel_poll(cls, context: Context) -> bool:
         return bool(
             context.object
             and context.object.mode == 'POSE'
@@ -59,7 +59,7 @@ class CRM_UI_PoseModeChecker:
 
     @classmethod
     def poll(cls, context: Context) -> bool:
-        return cls.convert_rotation_mode_panel_poll(context);
+        return cls.crm_panel_poll(context);
 
 class CRM_OT_convert_rotation_mode(Operator):
 ##################################################
@@ -71,14 +71,14 @@ class CRM_OT_convert_rotation_mode(Operator):
 
     @classmethod
     def poll(cls, context):
-        return context.selected_pose_bones
+        return context.selected_pose_bones #
 
     def get_fcs(self, obj):
         try:    return obj.animation_data.action.fcurves
         except: return None
 
-    def get_keyed_frames(self):
-        fcs = self.get_fcs(C.object)
+    def get_keyed_frames(self, context):
+        fcs = self.get_fcs(context.object)
 
         if fcs is None:
             print("No animation_data / invalid object")
@@ -118,13 +118,13 @@ class CRM_OT_convert_rotation_mode(Operator):
         scene = context.scene
         CRM_Properties = scene.CRM_Properties
 
-        listBones = C.selected_pose_bones
+        listBones = context.selected_pose_bones
 
-        keyed_frames_list = self.get_keyed_frames()
+        keyed_frames_list = self.get_keyed_frames(context)          
         
         for currentBone in listBones:
             bpy.ops.pose.select_all(action='DESELECT')
-            C.object.data.bones.active = currentBone.bone
+            context.object.data.bones.active = currentBone.bone
             currentBone.bone.select = True
             if dev_mode == True: ###### DEV OUTPUT
                 print("### Working on bone ", currentBone.name, " ###")
@@ -132,11 +132,11 @@ class CRM_OT_convert_rotation_mode(Operator):
             originalRmode = currentBone.rotation_mode
             ################################## START OF FRAME CYCLE
             for bName in keyed_frames_list:
-                if bName["bone_name"] == C.active_bone.name:
+                if bName["bone_name"] == context.active_bone.name:
                     if dev_mode == True: ###### DEV OUTPUT
                         print("########  Using keyed_frames_list of",bName["bone_name"],"  ########")
                     for KdFrame in bName["keyed_frames"]:
-                        C.scene.frame_current = int(KdFrame)
+                        context.scene.frame_current = int(KdFrame)
                         if dev_mode == True: ###### DEV OUTPUT
                             print('jumped to frame ', int(KdFrame))
 
@@ -159,7 +159,7 @@ class CRM_OT_convert_rotation_mode(Operator):
                     break
                 else:
                     if dev_mode == True:###### DEV OUTPUT
-                        print("List for ", bName["bone_name"], " doesn't match bone ", C.active_bone.name)
+                        print("List for ", bName["bone_name"], " doesn't match bone ", context.active_bone.name)
         
         self.report({"INFO"}, "Successfully converted to " + CRM_Properties.targetRmode)
 
@@ -323,7 +323,7 @@ class AddonPreferences(AddonPreferences, Panel):
         row.prop(self, "devMode")
 
         row = layout.row()
-        if C.preferences.addons.find("copy_global_transform") == -1:
+        if context.preferences.addons.find("copy_global_transform") == -1:
             row.label(text="This addon requires the addon \"Copy Gloabl Transform\" by Sybren A. Stüvel.", icon="ERROR")
             row.operator("crm.enable_addon")
 
