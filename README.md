@@ -4,7 +4,7 @@
 
 -----
 
-[![ko-fi](Prez/SupportOnKofi.jpg)](https://ko-fi.com/l0lock) [![uTip](Prez/SupportOnUtip.jpg)](https://www.utip.io/l0lock) [![Gumroad](Prez/BuyOnGumroad.jpg)](https://gum.co/gizmotools)
+[![ko-fi](Prez/SupportOnKofi.jpg)](https://ko-fi.com/l0lock) [![uTip](Prez/SupportOnUtip.jpg)](https://www.utip.io/l0lock)
 
 *Convert Rotation Mode* (*CRM*) is an addon for Blender that allows you to change the rotation mode of the selected bones and preserve the animation or poses you already made.
 
