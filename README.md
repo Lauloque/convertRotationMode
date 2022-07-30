@@ -44,70 +44,70 @@ Note that there are two main coordinates system for bones. Blender uses Y down, 
 
 <details>
 
-    <summary>
-    
-        ### For Y down coordinates (Blender):
-    
-    </summary>
-    
-    - COG: zxy
-    
-    - Hip: zxy
-    
-    - leg joints: yzx
-    
-    - shoulder/clav: yxz
-    
-    - upper arm: zyx (or yzx)
-    
-    - lower arm: zyx (or yzx)
-    
-    - wrist: yzx
-    
-    - spine base: zxy
-    
-    - mid spine: yzx
-    
-    - chest: zxy
-    
-    - neck: yxz
-    
-    - head: yxz
+<summary>
+
+### For Y down coordinates (Blender):
+
+</summary>
+
+- COG: zxy
+
+- Hip: zxy
+
+- leg joints: yzx
+
+- shoulder/clav: yxz
+
+- upper arm: zyx (or yzx)
+
+- lower arm: zyx (or yzx)
+
+- wrist: yzx
+
+- spine base: zxy
+
+- mid spine: yzx
+
+- chest: zxy
+
+- neck: yxz
+
+- head: yxz
 
 </details>
 
 <details>
 
-    <summary>
-    
-        ### For X down coordinates
-    
-    </summary>
-    
-    - COG: zxy
-    
-    - Hip: zxy
-    
-    - leg joints: xzy
-    
-    - shoulder/clav: xyz
-    
-    - upper arm: zxy
-    
-    - lower arm: zxy
-    
-    - wrist: xyz (or yzx?)
-    
-    - fingers: yzx
-    
-    - spine base: zxy
-    
-    - mid spine: xzy
-    
-    - chest: zxy
-    
-    - neck: yxz
-    
-    - head: yxz
+<summary>
+
+### For X down coordinates
+
+</summary>
+
+- COG: zxy
+
+- Hip: zxy
+
+- leg joints: xzy
+
+- shoulder/clav: xyz
+
+- upper arm: zxy
+
+- lower arm: zxy
+
+- wrist: xyz (or yzx?)
+
+- fingers: yzx
+
+- spine base: zxy
+
+- mid spine: xzy
+
+- chest: zxy
+
+- neck: yxz
+
+- head: yxz
 
 </details>
