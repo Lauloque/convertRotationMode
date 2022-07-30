@@ -23,6 +23,7 @@ from bpy.types import (
     )
 
 dev_mode = False
+C = bpy.context
 
 class CRM_Props(PropertyGroup):
 ##################################################
@@ -275,6 +276,7 @@ class VIEW3D_PT_Rmodes_recommandations(Panel):##################################
 # Define Panel classes for updating
 panels = (
         VIEW3D_PT_convert_rotation_mode,
+        VIEW3D_PT_Rmodes_recommandations,
         )
 
 
