@@ -23,7 +23,6 @@ from bpy.types import (
     )
 
 dev_mode = False
-C = bpy.context
 
 class CRM_Props(PropertyGroup):
 ##################################################
@@ -71,7 +70,7 @@ class CRM_OT_convert_rotation_mode(Operator):
 
     @classmethod
     def poll(cls, context):
-        return context.selected_pose_bones #
+        return context.selected_pose_bones
 
     def get_fcurves(self, obj):
         try:    return obj.animation_data.action.fcurves
@@ -81,43 +80,55 @@ class CRM_OT_convert_rotation_mode(Operator):
         
         ### GET ACTIVE OBJECT'S FCURVES LIST
         fcurves = self.get_fcurves(context.active_object)
-        if fcurves is None:
-            print("No animation_data / invalid object")
-            return None
-        else:
+        if fcurves == None:
             if dev_mode == True: ###### DEV OUTPUT
-                print("Found anim data on armature...")
+                print(f' # get_fcurves(): Anim Data not found on Armature.')
+            keyed_frames_list = None
+            return keyed_frames_list
+            
+        elif fcurves != None:
+            if dev_mode == True: ###### DEV OUTPUT
+                print(f' # get_fcurves(): Found Anim Data on Armature.')
+                for curve in fcurves:
+                    print(f' | # curve: {curve.data_path}')
 
-        ARRAY = []
-        
+        bone_filer_list = []
+                
         for curve in fcurves:
-#            print("\n", curve.data_path)
-#            print(curve.data_path.split('"')[1] in bone_name)
-
+            curve_path = curve.data_path.split('"')[1]
+            
             ### EXTRACT CURRENT BONE'S FCURVES
-            if curve.data_path.split('"')[1] == bone_name:
+            if dev_mode == True: ###### DEV OUTPUT
+                print(f' # bone_filter_list[]: comparing paths \"{curve_path}\" with \"{bone_name}\"')   
+                         
+            if curve_path == bone_name:
                 keyframePoints = curve.keyframe_points
+                
                 ### BUILD 
-                ARRAY.append({
+                bone_filer_list.append({
                     "bone_name": curve.data_path.split('"')[1],
                     "keyed_frames": [kp.co[0] for kp in keyframePoints],
                 })
-                if ARRAY is not None:
-        #            print("\n ######### ARRAY\n", ARRAY)
-                    
-                    #### CLEANUP DUPLICATES
-                    keyed_frames_list = []
-        #            print("\n")
-                    for i in ARRAY:
-        #                print(f'bone name: {i["bone_name"]}    keys: {i["keyed_frames"]}', )
-                        if i not in keyed_frames_list: 
-                            keyed_frames_list.append(i) 
-                else:
-                    keyed_frames_list = None
-                    if dev_mode == True:
-                        print("Failed to get list of Bones")
-                    
-        print("keyed_frames_list   :\n", keyed_frames_list)
+                
+        if bone_filer_list == []: 
+            if dev_mode == True: ###### DEV OUTPUT
+                print(f' # bone_filter_list[]: Anim Data not found on Bone:  \"{bone_name}\""')
+                print(f' |  # bone_filer_list[]   :\n |  | # {bone_filer_list}')
+            keyed_frames_list = None
+            return keyed_frames_list
+        else:               
+            if dev_mode == True: ###### DEV OUTPUT
+                print(f' # bone_filter_list[]: Found Anim Data on Bone.')
+            
+            #### CLEANUP DUPLICATES
+            keyed_frames_list = []
+            for i in bone_filer_list:
+                if i not in keyed_frames_list: 
+                    keyed_frames_list.append(i)
+                    if dev_mode == True: ###### DEV OUTPUT
+                        print(f' # Built keyed_frames_list[] for \"{bone_name}:\"')
+                        for bName in keyed_frames_list:
+                            print(f' |  # Keyed Frames: {bName["keyed_frames"]}\n #')
             
         return keyed_frames_list
 
@@ -125,55 +136,47 @@ class CRM_OT_convert_rotation_mode(Operator):
         scene = context.scene
         CRM_Properties = scene.CRM_Properties
 
-        listBones = context.selected_pose_bones
-
-#        keyed_frames_list = self.get_keyed_frames(context)
-#        if keyed_frames_list is None:
-#            self.report({"ERROR"}, "No animation found")
-#            return {'CANCELLED'}            
+        listBones = context.selected_pose_bones 
         
         for currentBone in listBones:
             bpy.ops.pose.select_all(action='DESELECT')
             context.object.data.bones.active = currentBone.bone
             currentBone.bone.select = True
             if dev_mode == True: ###### DEV OUTPUT
-                print("### Working on bone ", currentBone.bone.name, " ###")
-                print("Target Rmode will be", CRM_Properties.targetRmode)
+                print(f'### Working on bone \"{currentBone.bone.name}\" ###')
+                print(f' # Target Rmode will be {CRM_Properties.targetRmode}')
             originalRmode = currentBone.rotation_mode
             ################################## START OF FRAME CYCLE
             keyed_frames_list = self.get_keyed_frames(context, currentBone.bone.name)
             if keyed_frames_list is None:
-                self.report({"ERROR"}, "No animation found")
+                self.report({"ERROR"}, "No animation found (ㆆ_ㆆ)")
                 return {'CANCELLED'} 
             for bName in keyed_frames_list:
                 if bName["bone_name"] == context.active_bone.name:
                     if dev_mode == True: ###### DEV OUTPUT
-                        print("########  Using keyed_frames_list of",bName["bone_name"],"  ########")
+                        print(f' # Using keyed_frames_list of \"{bName["bone_name"]}\":')
                     for KdFrame in bName["keyed_frames"]:
                         context.scene.frame_current = int(KdFrame)
                         if dev_mode == True: ###### DEV OUTPUT
-                            print('jumped to frame ', int(KdFrame))
+                            print(f' |  # Jumped to frame {int(KdFrame)}')
 
                         currentBone.rotation_mode = originalRmode
                         if dev_mode == True: ###### DEV OUTPUT
-                            print(currentBone.name, " Rmode set to original ", originalRmode)
+                            print(f' |  # \"{currentBone.name}\" Rmode set to original {originalRmode}')
 
                         bpy.ops.object.copy_global_transform()
                         if dev_mode == True: ###### DEV OUTPUT
-                            print("Copied ", currentBone.name, " Global Transform")
+                            print(f' |  # Copied \"{currentBone.name}\" Global Transform')
 
                         currentBone.rotation_mode = CRM_Properties.targetRmode
                         if dev_mode == True: ###### DEV OUTPUT
-                            print("Rmode set to ", CRM_Properties.targetRmode)
+                            print(f' |  # Rmode set to {CRM_Properties.targetRmode}')
 
                         bpy.ops.object.paste_transform(method='CURRENT')
                         if dev_mode == True: ###### DEV OUTPUT
-                            print("Pasted ", currentBone.name, " Global Transform")
-                            print("Done working on ", currentBone.name, " moving to next one! \n \n")
+                            print(f' |  # Pasted \"{currentBone.name}\" Global Transform')
+                            print(f' # Done working on ",currentBone.name,", moving to next one!\n # ')
                     break
-                else:
-                    if dev_mode == True:###### DEV OUTPUT
-                        print("List for ", bName["bone_name"], " doesn't match bone ", context.active_bone.name)
         
         self.report({"INFO"}, "Successfully converted to " + CRM_Properties.targetRmode)
 
