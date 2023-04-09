@@ -1,8 +1,8 @@
 bl_info = {
     "name": "Convert Rotation Mode",
     "author": "Loïc \"L0Lock\" Dautry",
-    "version": (1, 0, 0),
-    "blender": (3, 2, 1),
+    "version": (1, 0, 1),
+    "blender": (3, 5, 0),
     "location": "3D Viewport → Sidebar → Animation Tab",
     "category": "Animation",
     "warning": "Requires the addon \"Copy Gloabl Transform\" available since Blender v3.1",
@@ -22,7 +22,7 @@ from bpy.types import (
     AddonPreferences, 
     )
 
-dev_mode = False
+dev_mode = True
 C = bpy.context
 
 class CRM_Props(PropertyGroup):
@@ -76,7 +76,7 @@ class CRM_OT_convert_rotation_mode(Operator):
     def get_fcurves(self, obj):
         try:    return obj.animation_data.action.fcurves
         except: return None
-
+    '''
     def get_keyed_frames(self, context, bone_name):
         
         ### GET ACTIVE OBJECT'S FCURVES LIST
@@ -94,15 +94,16 @@ class CRM_OT_convert_rotation_mode(Operator):
                     print(f' | # curve: {curve.data_path}')
 
         bone_filer_list = []
-                
+        
+        ### EXTRACT CURRENT BONE'S FCURVES
+        print(f' # Retrieving and filtering curves from "{bone_name}"')
         for curve in fcurves:
             curve_path = curve.data_path.split('"')[1]
             
-            ### EXTRACT CURRENT BONE'S FCURVES
             if dev_mode == True: ###### DEV OUTPUT
-                print(f' # bone_filter_list[]: comparing paths \"{curve_path}\" with \"{bone_name}\"')   
+                print(f' | # bone_filter_list[]: comparing paths \"{curve_path}\" with \"{bone_name}\"')   
                          
-            if curve_path == bone_name:
+            if curve_path == bone_name and "rotation" in curve_path:
                 keyframePoints = curve.keyframe_points
                 
                 ### BUILD 
@@ -132,56 +133,66 @@ class CRM_OT_convert_rotation_mode(Operator):
                             print(f' |  # Keyed Frames: {bName["keyed_frames"]}\n #')
             
         return keyed_frames_list
+    '''
 
     def execute(self, context):
         scene = context.scene
         CRM_Properties = scene.CRM_Properties
 
-        listBones = context.selected_pose_bones 
-        
+        listBones = context.selected_pose_bones
+        startFrame = context.scene.frame_start
+        endFrame = context.scene.frame_end
+        initFrame = context.scene.frame_current
+
         for currentBone in listBones:
+
+            ### Updating bone selection
             bpy.ops.pose.select_all(action='DESELECT')
             context.object.data.bones.active = currentBone.bone
             currentBone.bone.select = True
             if dev_mode == True: ###### DEV OUTPUT
                 print(f'### Working on bone \"{currentBone.bone.name}\" ###')
                 print(f' # Target Rmode will be {CRM_Properties.targetRmode}')
+
             originalRmode = currentBone.rotation_mode
-            ################################## START OF FRAME CYCLE
-            keyed_frames_list = self.get_keyed_frames(context, currentBone.bone.name)
-            if keyed_frames_list is None:
-                self.report({"ERROR"}, "No animation found (ㆆ_ㆆ)")
-                return {'CANCELLED'} 
-            for bName in keyed_frames_list:
-                if bName["bone_name"] == context.active_bone.name:
-                    if dev_mode == True: ###### DEV OUTPUT
-                        print(f' # Using keyed_frames_list of \"{bName["bone_name"]}\":')
-                    for KdFrame in bName["keyed_frames"]:
-                        context.scene.frame_current = int(KdFrame)
-                        if dev_mode == True: ###### DEV OUTPUT
-                            print(f' |  # Jumped to frame {int(KdFrame)}')
+            bpy.ops.screen.frame_jump(end=False)
 
-                        currentBone.rotation_mode = originalRmode
-                        if dev_mode == True: ###### DEV OUTPUT
-                            print(f' |  # \"{currentBone.name}\" Rmode set to original {originalRmode}')
+            while context.scene.frame_current <= endFrame:
 
-                        bpy.ops.object.copy_global_transform()
-                        if dev_mode == True: ###### DEV OUTPUT
-                            print(f' |  # Copied \"{currentBone.name}\" Global Transform')
+                curFrame = context.scene.frame_current
+                if dev_mode == True: ###### DEV OUTPUT
+                    print(f' |  # Jumped to frame {curFrame}')
 
-                        currentBone.rotation_mode = CRM_Properties.targetRmode
-                        if dev_mode == True: ###### DEV OUTPUT
-                            print(f' |  # Rmode set to {CRM_Properties.targetRmode}')
+                currentBone.rotation_mode = originalRmode
+                currentBone.keyframe_insert("rotation_mode", frame=curFrame)
+                bpy.ops.anim.keyframe_insert_by_name(type="Available")
+                if dev_mode == True: ###### DEV OUTPUT
+                    print(f' |  |  # \"{currentBone.name}\" Rmode set to original {currentBone.rotation_mode}')
 
-                        bpy.ops.object.paste_transform(method='CURRENT')
-                        if dev_mode == True: ###### DEV OUTPUT
-                            print(f' |  # Pasted \"{currentBone.name}\" Global Transform')
-                            print(f' # Done working on ",currentBone.name,", moving to next one!\n # ')
+                bpy.ops.object.copy_global_transform()
+                if dev_mode == True: ###### DEV OUTPUT
+                    print(f' |  |  # Copied \"{currentBone.name}\" Global Transform')
+
+                currentBone.rotation_mode = CRM_Properties.targetRmode
+                currentBone.keyframe_insert("rotation_mode", frame=curFrame)
+                if dev_mode == True: ###### DEV OUTPUT
+                    print(f' |  |  # Rmnode set to {currentBone.rotation_mode}')
+
+                bpy.ops.object.paste_transform(method='CURRENT')
+                if dev_mode == True: ###### DEV OUTPUT
+                    print(f' |  |  # Pasted \"{currentBone.name}\" Global Transform')
+
+                bpy.ops.screen.keyframe_jump(next=True)
+                if curFrame == context.scene.frame_current:
                     break
-        
+            if dev_mode == True: ###### DEV OUTPUT
+                print(f' # No more keyframes on "{currentBone.name}", moving to next bone.\n # ')
+        if dev_mode == True: ###### DEV OUTPUT
+                print(f' # No more bones to work on.')
+
         self.report({"INFO"}, "Successfully converted to " + CRM_Properties.targetRmode)
-
-
+        
+        # context.scene.frame_current = 
 
         return{'FINISHED'}
 
