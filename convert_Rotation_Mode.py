@@ -243,16 +243,6 @@ def update_devMode(self, context):
         print("\n[{}]\n{}\n\nError:\n{}".format(__name__, message, e))
         pass
 
-# def update_jumpInitFrame(self, context):
-#     message = "Convert Rotation Mode: Toggling initial frame jumping has failed"
-#     try:
-#         globals()['dev_mode'] = context.preferences.addons[__name__].preferences.devMode
-#         print('dev_mode toggled')
-
-#     except Exception as e:
-#         print("\n[{}]\n{}\n\nError:\n{}".format(__name__, message, e))
-#         pass
-
 def update_devMode(self, context):
     message = "Convert Rotation Mode: Toggling dev mode has failed"
     try:
@@ -262,16 +252,6 @@ def update_devMode(self, context):
     except Exception as e:
         print("\n[{}]\n{}\n\nError:\n{}".format(__name__, message, e))
         pass
-
-# def update_jumpInitFrame(self, context):
-#     message = "Convert Rotation Mode: Toggling initial frame jumping has failed"
-#     try:
-#         globals()['dev_mode'] = context.preferences.addons[__name__].preferences.devMode
-#         print('dev_mode toggled')
-
-#     except Exception as e:
-#         print("\n[{}]\n{}\n\nError:\n{}".format(__name__, message, e))
-#         pass
 
 
 def update_panel(self, context):
@@ -327,9 +307,8 @@ class AddonPreferences(AddonPreferences, Panel):
         layout = self.layout
 
         row = layout.row()
-        col = row.column()
-
         row.prop(self, "category")
+        row.label(text="")
         row.prop(self, "devMode")
         row.prop(self, "jumpInitFrame")
 
@@ -337,7 +316,6 @@ class AddonPreferences(AddonPreferences, Panel):
         if context.preferences.addons.find("copy_global_transform") == -1:
             row.label(text="This addon requires the addon \"Copy Gloabl Transform\" by Sybren A. Stüvel.", icon="ERROR")
             row.operator("crm.enable_addon")
-
 
 classes = (
     CRM_Props,
