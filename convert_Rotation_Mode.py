@@ -253,6 +253,26 @@ def update_devMode(self, context):
 #         print("\n[{}]\n{}\n\nError:\n{}".format(__name__, message, e))
 #         pass
 
+def update_devMode(self, context):
+    message = "Convert Rotation Mode: Toggling dev mode has failed"
+    try:
+        globals()['dev_mode'] = context.preferences.addons[__name__].preferences.devMode
+        print('dev_mode toggled')
+
+    except Exception as e:
+        print("\n[{}]\n{}\n\nError:\n{}".format(__name__, message, e))
+        pass
+
+# def update_jumpInitFrame(self, context):
+#     message = "Convert Rotation Mode: Toggling initial frame jumping has failed"
+#     try:
+#         globals()['dev_mode'] = context.preferences.addons[__name__].preferences.devMode
+#         print('dev_mode toggled')
+
+#     except Exception as e:
+#         print("\n[{}]\n{}\n\nError:\n{}".format(__name__, message, e))
+#         pass
+
 
 def update_panel(self, context):
     message = "Convert Rotation Mode: Updating Panel locations has failed"
@@ -289,12 +309,12 @@ class AddonPreferences(AddonPreferences, Panel):
         update=update_devMode
         )
     
-    jumpInitFrame: BoolProperty(
-        name="Jump to initial frame",
-        description='When done converting, jump back to the initial frame.',
-        default= True
-        # update=update_jumpInitFrame
-    )
+    # jumpInitFrame: BoolProperty(
+    #     name="Jump to initial frame",
+    #     description='When done converting, jump back to the initial frame.',
+    #     default= True
+    #     # update=update_jumpInitFrame
+    # )
 
     category: StringProperty(
             name="Tab Category",
