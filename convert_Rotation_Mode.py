@@ -22,7 +22,6 @@ from bpy.types import (
     AddonPreferences, 
     )
 
-dev_mode = True
 C = bpy.context
 
 class CRM_Props(PropertyGroup):
@@ -166,7 +165,7 @@ class CRM_OT_convert_rotation_mode(Operator):
             self.devOut(context, f' # No more keyframes on "{currentBone.name}", moving to next bone.\n # ')
         self.devOut(context, f' # No more bones to work on.')
 
-        self.report({"INFO"}, f"Successfully converted {len(listBones)} to '{CRM_Properties.targetRmode}'")
+        self.report({"INFO"}, f"Successfully converted {len(listBones)} bone(s) to '{CRM_Properties.targetRmode}'")
         
         if context.preferences.addons[__name__].preferences.jumpInitFrame == True:
             context.scene.frame_current = initFrame
@@ -201,7 +200,8 @@ class VIEW3D_PT_convert_rotation_mode(CRM_UI_PoseModeChecker, Panel):
             col.label(text="Please turn on Auto-Keying!", icon="ERROR")
         col.operator("crm.convert_rotation_mode", text="Convert!")
 
-class VIEW3D_PT_Rmodes_recommandations(Panel):##################################################
+class VIEW3D_PT_Rmodes_recommandations(Panel):
+##################################################
 # Rmodes recommandations subpanel
     bl_space_type = 'VIEW_3D'
     bl_region_type = 'UI'
@@ -267,27 +267,6 @@ panels = (
         VIEW3D_PT_Rmodes_recommandations,
         )
 
-def update_devMode(self, context):
-    message = "Convert Rotation Mode: Toggling dev mode has failed"
-    try:
-        globals()['dev_mode'] = context.preferences.addons[__name__].preferences.devMode
-        print('dev_mode toggled')
-
-    except Exception as e:
-        print("\n[{}]\n{}\n\nError:\n{}".format(__name__, message, e))
-        pass
-
-def update_devMode(self, context):
-    message = "Convert Rotation Mode: Toggling dev mode has failed"
-    try:
-        globals()['dev_mode'] = context.preferences.addons[__name__].preferences.devMode
-        print('dev_mode toggled')
-
-    except Exception as e:
-        print("\n[{}]\n{}\n\nError:\n{}".format(__name__, message, e))
-        pass
-
-
 def update_panel(self, context):
     message = "Convert Rotation Mode: Updating Panel locations has failed"
     try:
@@ -327,7 +306,6 @@ class AddonPreferences(AddonPreferences, Panel):
         name="Jump to initial frame",
         description='When done converting, jump back to the initial frame.',
         default= True
-        # update=update_jumpInitFrame
     )
 
     preserveLocks: BoolProperty(
