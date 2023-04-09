@@ -1,7 +1,7 @@
 bl_info = {
     "name": "Convert Rotation Mode",
     "author": "Loïc \"L0Lock\" Dautry",
-    "version": (1, 2, 3),
+    "version": (1, 2, 4),
     "blender": (3, 5, 0),
     "location": "3D Viewport → Sidebar → Animation Tab",
     "category": "Animation",
@@ -103,12 +103,18 @@ class CRM_OT_convert_rotation_mode(Operator):
     def execute(self, context):
         scene = context.scene
         CRM_Properties = scene.CRM_Properties
+        wm = bpy.context.window_manager
 
         initActive = context.object.data.bones.active
         listBones = context.selected_pose_bones
         startFrame = context.scene.frame_start
         endFrame = context.scene.frame_end
         initFrame = context.scene.frame_current
+        duration = endFrame - startFrame
+        amount = len(listBones)
+
+        progressMax = amount * duration
+        wm.progress_begin(0, progressMax)
 
         self.devOut(context, '##################\n### test message devMode\n############')
         self.devOut(context, f'# i like my {endFrame}')
@@ -135,11 +141,14 @@ class CRM_OT_convert_rotation_mode(Operator):
             originalRmode = currentBone.rotation_mode
             bpy.ops.screen.frame_jump(end=False)
             currentBone.keyframe_insert("rotation_mode", frame=1)
+            cnt = 1
 
             while context.scene.frame_current <= endFrame:
 
                 curFrame = context.scene.frame_current
                 self.devOut(context, f' |  # Jumped to frame {curFrame}')
+                progressCurrent = cnt * curFrame
+                wm.progress_update(progressCurrent)
 
                 currentBone.rotation_mode = originalRmode
                 bpy.ops.anim.keyframe_insert_by_name(type="Available")
@@ -167,6 +176,7 @@ class CRM_OT_convert_rotation_mode(Operator):
             self.devOut(context, f' # No more keyframes on "{currentBone.name}", moving to next bone.\n # ')
         self.devOut(context, f' # No more bones to work on.')
 
+        wm.progress_end()
         self.report({"INFO"}, f"Successfully converted {len(listBones)} bone(s) to '{CRM_Properties.targetRmode}'")
         
         if context.preferences.addons[__name__].preferences.jumpInitFrame == True:
