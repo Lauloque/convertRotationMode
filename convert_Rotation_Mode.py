@@ -299,7 +299,6 @@ class AddonPreferences(AddonPreferences, Panel):
         name="Developer Mode",
         description='Enables all error tracking messages.',
         default= False,
-        update=update_devMode
         )
     
     jumpInitFrame: BoolProperty(
