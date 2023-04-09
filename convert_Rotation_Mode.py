@@ -76,64 +76,6 @@ class CRM_OT_convert_rotation_mode(Operator):
     def get_fcurves(self, obj):
         try:    return obj.animation_data.action.fcurves
         except: return None
-    '''
-    def get_keyed_frames(self, context, bone_name):
-        
-        ### GET ACTIVE OBJECT'S FCURVES LIST
-        fcurves = self.get_fcurves(context.active_object)
-        if fcurves == None:
-            if dev_mode == True: ###### DEV OUTPUT
-                print(f' # get_fcurves(): Anim Data not found on Armature.')
-            keyed_frames_list = None
-            return keyed_frames_list
-            
-        elif fcurves != None:
-            if dev_mode == True: ###### DEV OUTPUT
-                print(f' # get_fcurves(): Found Anim Data on Armature.')
-                for curve in fcurves:
-                    print(f' | # curve: {curve.data_path}')
-
-        bone_filer_list = []
-        
-        ### EXTRACT CURRENT BONE'S FCURVES
-        print(f' # Retrieving and filtering curves from "{bone_name}"')
-        for curve in fcurves:
-            curve_path = curve.data_path.split('"')[1]
-            
-            if dev_mode == True: ###### DEV OUTPUT
-                print(f' | # bone_filter_list[]: comparing paths \"{curve_path}\" with \"{bone_name}\"')   
-                         
-            if curve_path == bone_name and "rotation" in curve_path:
-                keyframePoints = curve.keyframe_points
-                
-                ### BUILD 
-                bone_filer_list.append({
-                    "bone_name": curve.data_path.split('"')[1],
-                    "keyed_frames": [kp.co[0] for kp in keyframePoints],
-                })
-                
-        if bone_filer_list == []: 
-            if dev_mode == True: ###### DEV OUTPUT
-                print(f' # bone_filter_list[]: Anim Data not found on Bone:  \"{bone_name}\""')
-                print(f' |  # bone_filer_list[]   :\n |  | # {bone_filer_list}')
-            keyed_frames_list = None
-            return keyed_frames_list
-        else:               
-            if dev_mode == True: ###### DEV OUTPUT
-                print(f' # bone_filter_list[]: Found Anim Data on Bone.')
-            
-            #### CLEANUP DUPLICATES
-            keyed_frames_list = []
-            for i in bone_filer_list:
-                if i not in keyed_frames_list: 
-                    keyed_frames_list.append(i)
-                    if dev_mode == True: ###### DEV OUTPUT
-                        print(f' # Built keyed_frames_list[] for \"{bone_name}:\"')
-                        for bName in keyed_frames_list:
-                            print(f' |  # Keyed Frames: {bName["keyed_frames"]}\n #')
-            
-        return keyed_frames_list
-    '''
 
     def execute(self, context):
         scene = context.scene
@@ -192,8 +134,8 @@ class CRM_OT_convert_rotation_mode(Operator):
 
         self.report({"INFO"}, "Successfully converted to " + CRM_Properties.targetRmode)
         
-        if context.preferences.addons[__name__].preferences.jumpInitFrame == True:
-            context.scene.frame_current = initFrame
+        # if context.preferences.addons[__name__].preferences.jumpInitFrame == True:
+        #     context.scene.frame_current = initFrame
 
         return{'FINISHED'}
 
@@ -369,7 +311,7 @@ class AddonPreferences(AddonPreferences, Panel):
 
         row.prop(self, "category")
         row.prop(self, "devMode")
-        row.prop(self, "jumpInitFrame")
+        # row.prop(self, "jumpInitFrame")
 
         row = layout.row()
         if context.preferences.addons.find("copy_global_transform") == -1:
