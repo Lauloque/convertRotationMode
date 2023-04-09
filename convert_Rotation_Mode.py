@@ -11,15 +11,16 @@ bl_info = {
     "tracker_url": "https://github.com/L0Lock/convertRotationMode/issues",
 }
 
-import bpy, re
+import bpy
 from bpy.props import (
     StringProperty, EnumProperty, BoolProperty,
 )
 from bpy.types import (
-    Context,  Object,
-    Operator, Panel,
-    PoseBone, PropertyGroup,
-    AddonPreferences, 
+    Context,
+    Operator,
+    Panel,
+    PropertyGroup,
+    AddonPreferences
     )
 
 C = bpy.context
