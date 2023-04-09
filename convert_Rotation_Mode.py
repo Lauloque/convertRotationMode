@@ -1,7 +1,7 @@
 bl_info = {
     "name": "Convert Rotation Mode",
     "author": "Loïc \"L0Lock\" Dautry",
-    "version": (1, 0, 1),
+    "version": (1, 1, 0),
     "blender": (3, 5, 0),
     "location": "3D Viewport → Sidebar → Animation Tab",
     "category": "Animation",
@@ -134,8 +134,8 @@ class CRM_OT_convert_rotation_mode(Operator):
 
         self.report({"INFO"}, "Successfully converted to " + CRM_Properties.targetRmode)
         
-        # if context.preferences.addons[__name__].preferences.jumpInitFrame == True:
-        #     context.scene.frame_current = initFrame
+        if context.preferences.addons[__name__].preferences.jumpInitFrame == True:
+            context.scene.frame_current = initFrame
 
         return{'FINISHED'}
 
@@ -243,16 +243,6 @@ def update_devMode(self, context):
         print("\n[{}]\n{}\n\nError:\n{}".format(__name__, message, e))
         pass
 
-# def update_jumpInitFrame(self, context):
-#     message = "Convert Rotation Mode: Toggling initial frame jumping has failed"
-#     try:
-#         globals()['dev_mode'] = context.preferences.addons[__name__].preferences.devMode
-#         print('dev_mode toggled')
-
-#     except Exception as e:
-#         print("\n[{}]\n{}\n\nError:\n{}".format(__name__, message, e))
-#         pass
-
 def update_devMode(self, context):
     message = "Convert Rotation Mode: Toggling dev mode has failed"
     try:
@@ -262,16 +252,6 @@ def update_devMode(self, context):
     except Exception as e:
         print("\n[{}]\n{}\n\nError:\n{}".format(__name__, message, e))
         pass
-
-# def update_jumpInitFrame(self, context):
-#     message = "Convert Rotation Mode: Toggling initial frame jumping has failed"
-#     try:
-#         globals()['dev_mode'] = context.preferences.addons[__name__].preferences.devMode
-#         print('dev_mode toggled')
-
-#     except Exception as e:
-#         print("\n[{}]\n{}\n\nError:\n{}".format(__name__, message, e))
-#         pass
 
 
 def update_panel(self, context):
@@ -309,12 +289,12 @@ class AddonPreferences(AddonPreferences, Panel):
         update=update_devMode
         )
     
-    # jumpInitFrame: BoolProperty(
-    #     name="Jump to initial frame",
-    #     description='When done converting, jump back to the initial frame.',
-    #     default= True
-    #     # update=update_jumpInitFrame
-    # )
+    jumpInitFrame: BoolProperty(
+        name="Jump to initial frame",
+        description='When done converting, jump back to the initial frame.',
+        default= True
+        # update=update_jumpInitFrame
+    )
 
     category: StringProperty(
             name="Tab Category",
@@ -327,17 +307,15 @@ class AddonPreferences(AddonPreferences, Panel):
         layout = self.layout
 
         row = layout.row()
-        col = row.column()
-
         row.prop(self, "category")
+        row.label(text="")
         row.prop(self, "devMode")
-        # row.prop(self, "jumpInitFrame")
+        row.prop(self, "jumpInitFrame")
 
         row = layout.row()
         if context.preferences.addons.find("copy_global_transform") == -1:
             row.label(text="This addon requires the addon \"Copy Gloabl Transform\" by Sybren A. Stüvel.", icon="ERROR")
             row.operator("crm.enable_addon")
-
 
 classes = (
     CRM_Props,
