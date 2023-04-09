@@ -1,7 +1,7 @@
 bl_info = {
     "name": "Convert Rotation Mode",
     "author": "Loïc \"L0Lock\" Dautry",
-    "version": (1, 2, 0),
+    "version": (1, 2, 2),
     "blender": (3, 5, 0),
     "location": "3D Viewport → Sidebar → Animation Tab",
     "category": "Animation",
@@ -72,6 +72,10 @@ class CRM_OT_convert_rotation_mode(Operator):
     @classmethod
     def poll(cls, context):
         return context.selected_pose_bones
+    
+    def devOut(self, context, msg):
+        if context.preferences.addons[__name__].preferences.devMode == True:
+            print(msg)
 
     def get_fcurves(self, obj):
         try:    return obj.animation_data.action.fcurves
@@ -105,15 +109,17 @@ class CRM_OT_convert_rotation_mode(Operator):
         endFrame = context.scene.frame_end
         initFrame = context.scene.frame_current
 
+        self.devOut(context, '##################\n### test message devMode\n############')
+        self.devOut(context, f'# i like my {endFrame}')
+
         for currentBone in listBones:
 
             ### Updating bone selection
             bpy.ops.pose.select_all(action='DESELECT')
             context.object.data.bones.active = currentBone.bone
             currentBone.bone.select = True
-            if dev_mode == True: ###### DEV OUTPUT
-                print(f'### Working on bone \"{currentBone.bone.name}\" ###')
-                print(f' # Target Rmode will be {CRM_Properties.targetRmode}')
+            self.devOut(context, f'### Working on bone \"{currentBone.bone.name}\" ###')
+            self.devOut(context, f' # Target Rmode will be {CRM_Properties.targetRmode}')
 
             ### Check lock states
             self.locks = []
@@ -123,8 +129,7 @@ class CRM_OT_convert_rotation_mode(Operator):
             self.locks.append(currentBone.lock_rotation_w)
             self.locks.append(currentBone.lock_rotations_4d)
             self.lockSwitch('OFF', currentBone)
-            if dev_mode == True: ###### DEV OUTPUT
-                print(f' |  # Backed up and unlocked rotations')
+            self.devOut(context, f' |  # Backed up and unlocked rotations')
 
             originalRmode = currentBone.rotation_mode
             bpy.ops.screen.frame_jump(end=False)
@@ -133,26 +138,21 @@ class CRM_OT_convert_rotation_mode(Operator):
             while context.scene.frame_current <= endFrame:
 
                 curFrame = context.scene.frame_current
-                if dev_mode == True: ###### DEV OUTPUT
-                    print(f' |  # Jumped to frame {curFrame}')
+                self.devOut(context, f' |  # Jumped to frame {curFrame}')
 
                 currentBone.rotation_mode = originalRmode
                 bpy.ops.anim.keyframe_insert_by_name(type="Available")
-                if dev_mode == True: ###### DEV OUTPUT
-                    print(f' |  |  # \"{currentBone.name}\" Rmode set to original {currentBone.rotation_mode}')
+                self.devOut(context, f' |  |  # \"{currentBone.name}\" Rmode set to original {currentBone.rotation_mode}')
 
                 bpy.ops.object.copy_global_transform()
-                if dev_mode == True: ###### DEV OUTPUT
-                    print(f' |  |  # Copied \"{currentBone.name}\" Global Transform')
+                self.devOut(context, f' |  |  # Copied \"{currentBone.name}\" Global Transform')
 
                 currentBone.rotation_mode = CRM_Properties.targetRmode
                 currentBone.keyframe_insert("rotation_mode", frame=curFrame)
-                if dev_mode == True: ###### DEV OUTPUT
-                    print(f' |  |  # Rmnode set to {currentBone.rotation_mode}')
+                self.devOut(context, f' |  |  # Rmnode set to {currentBone.rotation_mode}')
 
                 bpy.ops.object.paste_transform(method='CURRENT')
-                if dev_mode == True: ###### DEV OUTPUT
-                    print(f' |  |  # Pasted \"{currentBone.name}\" Global Transform')
+                self.devOut(context, f' |  |  # Pasted \"{currentBone.name}\" Global Transform')
 
                 self.jumpNext(context)
                 if curFrame == context.scene.frame_current:
@@ -161,15 +161,12 @@ class CRM_OT_convert_rotation_mode(Operator):
             ### Reverting lock states
             if context.preferences.addons[__name__].preferences.preserveLocks == True:
                 self.lockSwitch('ON', currentBone)
-                if dev_mode == True: ###### DEV OUTPUT
-                    print(f' |  # Reverted rotation locks')
+                self.devOut(context, f' |  # Reverted rotation locks')
 
-            if dev_mode == True: ###### DEV OUTPUT
-                print(f' # No more keyframes on "{currentBone.name}", moving to next bone.\n # ')
-        if dev_mode == True: ###### DEV OUTPUT
-                print(f' # No more bones to work on.')
+            self.devOut(context, f' # No more keyframes on "{currentBone.name}", moving to next bone.\n # ')
+        self.devOut(context, f' # No more bones to work on.')
 
-        self.report({"INFO"}, "Successfully converted to " + CRM_Properties.targetRmode)
+        self.report({"INFO"}, f"Successfully converted {len(listBones)} to '{CRM_Properties.targetRmode}'")
         
         if context.preferences.addons[__name__].preferences.jumpInitFrame == True:
             context.scene.frame_current = initFrame
