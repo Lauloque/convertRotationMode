@@ -1,7 +1,7 @@
 bl_info = {
     "name": "Convert Rotation Mode",
     "author": "Loïc \"L0Lock\" Dautry",
-    "version": (1, 2, 2),
+    "version": (1, 2, 3),
     "blender": (3, 5, 0),
     "location": "3D Viewport → Sidebar → Animation Tab",
     "category": "Animation",
@@ -104,6 +104,7 @@ class CRM_OT_convert_rotation_mode(Operator):
         scene = context.scene
         CRM_Properties = scene.CRM_Properties
 
+        initActive = context.object.data.bones.active
         listBones = context.selected_pose_bones
         startFrame = context.scene.frame_start
         endFrame = context.scene.frame_end
@@ -170,6 +171,11 @@ class CRM_OT_convert_rotation_mode(Operator):
         
         if context.preferences.addons[__name__].preferences.jumpInitFrame == True:
             context.scene.frame_current = initFrame
+        if context.preferences.addons[__name__].preferences.preserveSelection == True:
+            for i in listBones:
+                i.bone.select = True
+                context.object.data.bones.active = initActive
+
 
         return{'FINISHED'}
 
@@ -314,6 +320,12 @@ class AddonPreferences(AddonPreferences, Panel):
         default= True
     )
 
+    preserveSelection: BoolProperty(
+        name="Preserve Selection",
+        description="Preserves selection.",
+        default= True
+    )
+
     category: StringProperty(
             name="Tab Category",
             description="Choose a name for the category of the panel (default: Animation).",
@@ -330,6 +342,7 @@ class AddonPreferences(AddonPreferences, Panel):
         row.prop(self, "devMode")
         row.prop(self, "jumpInitFrame")
         row.prop(self, "preserveLocks")
+        row.prop(self, "preserveSelection")
 
         row = layout.row()
         if context.preferences.addons.find("copy_global_transform") == -1:
