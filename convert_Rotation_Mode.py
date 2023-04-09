@@ -1,7 +1,7 @@
 bl_info = {
     "name": "Convert Rotation Mode",
     "author": "Loïc \"L0Lock\" Dautry",
-    "version": (1, 0, 1),
+    "version": (1, 1, 0),
     "blender": (3, 5, 0),
     "location": "3D Viewport → Sidebar → Animation Tab",
     "category": "Animation",
@@ -134,8 +134,8 @@ class CRM_OT_convert_rotation_mode(Operator):
 
         self.report({"INFO"}, "Successfully converted to " + CRM_Properties.targetRmode)
         
-        # if context.preferences.addons[__name__].preferences.jumpInitFrame == True:
-        #     context.scene.frame_current = initFrame
+        if context.preferences.addons[__name__].preferences.jumpInitFrame == True:
+            context.scene.frame_current = initFrame
 
         return{'FINISHED'}
 
@@ -309,12 +309,12 @@ class AddonPreferences(AddonPreferences, Panel):
         update=update_devMode
         )
     
-    # jumpInitFrame: BoolProperty(
-    #     name="Jump to initial frame",
-    #     description='When done converting, jump back to the initial frame.',
-    #     default= True
-    #     # update=update_jumpInitFrame
-    # )
+    jumpInitFrame: BoolProperty(
+        name="Jump to initial frame",
+        description='When done converting, jump back to the initial frame.',
+        default= True
+        # update=update_jumpInitFrame
+    )
 
     category: StringProperty(
             name="Tab Category",
@@ -331,7 +331,7 @@ class AddonPreferences(AddonPreferences, Panel):
 
         row.prop(self, "category")
         row.prop(self, "devMode")
-        # row.prop(self, "jumpInitFrame")
+        row.prop(self, "jumpInitFrame")
 
         row = layout.row()
         if context.preferences.addons.find("copy_global_transform") == -1:
