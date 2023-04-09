@@ -1,7 +1,7 @@
 bl_info = {
     "name": "Convert Rotation Mode",
     "author": "Loïc \"L0Lock\" Dautry",
-    "version": (1, 1, 0),
+    "version": (1, 2, 0),
     "blender": (3, 5, 0),
     "location": "3D Viewport → Sidebar → Animation Tab",
     "category": "Animation",
@@ -77,6 +77,25 @@ class CRM_OT_convert_rotation_mode(Operator):
         try:    return obj.animation_data.action.fcurves
         except: return None
 
+    def lockSwitch(self, mode, currentBone):
+        if mode == 'OFF':
+            currentBone.lock_rotation[0] = False
+            currentBone.lock_rotation[1] = False
+            currentBone.lock_rotation[2] = False
+            currentBone.lock_rotation_w = False
+            currentBone.lock_rotations_4d = False
+        if mode == 'ON':
+            currentBone.lock_rotation[0] = self.locks[0]
+            currentBone.lock_rotation[1] = self.locks[1]
+            currentBone.lock_rotation[2] = self.locks[2]
+            currentBone.lock_rotation_w = self.locks[3]
+            currentBone.lock_rotations_4d = self.locks[4]
+
+    def jumpNext(self, context):
+        bpy.ops.screen.keyframe_jump(next=True)
+        context.scene.frame_current += 1
+        context.scene.frame_current -= 1
+
     def execute(self, context):
         scene = context.scene
         CRM_Properties = scene.CRM_Properties
@@ -96,8 +115,20 @@ class CRM_OT_convert_rotation_mode(Operator):
                 print(f'### Working on bone \"{currentBone.bone.name}\" ###')
                 print(f' # Target Rmode will be {CRM_Properties.targetRmode}')
 
+            ### Check lock states
+            self.locks = []
+            self.locks.append(currentBone.lock_rotation[0])
+            self.locks.append(currentBone.lock_rotation[1])
+            self.locks.append(currentBone.lock_rotation[2])
+            self.locks.append(currentBone.lock_rotation_w)
+            self.locks.append(currentBone.lock_rotations_4d)
+            self.lockSwitch('OFF', currentBone)
+            if dev_mode == True: ###### DEV OUTPUT
+                print(f' |  # Backed up and unlocked rotations')
+
             originalRmode = currentBone.rotation_mode
             bpy.ops.screen.frame_jump(end=False)
+            currentBone.keyframe_insert("rotation_mode", frame=1)
 
             while context.scene.frame_current <= endFrame:
 
@@ -106,7 +137,6 @@ class CRM_OT_convert_rotation_mode(Operator):
                     print(f' |  # Jumped to frame {curFrame}')
 
                 currentBone.rotation_mode = originalRmode
-                currentBone.keyframe_insert("rotation_mode", frame=curFrame)
                 bpy.ops.anim.keyframe_insert_by_name(type="Available")
                 if dev_mode == True: ###### DEV OUTPUT
                     print(f' |  |  # \"{currentBone.name}\" Rmode set to original {currentBone.rotation_mode}')
@@ -124,9 +154,16 @@ class CRM_OT_convert_rotation_mode(Operator):
                 if dev_mode == True: ###### DEV OUTPUT
                     print(f' |  |  # Pasted \"{currentBone.name}\" Global Transform')
 
-                bpy.ops.screen.keyframe_jump(next=True)
+                self.jumpNext(context)
                 if curFrame == context.scene.frame_current:
                     break
+            
+            ### Reverting lock states
+            if context.preferences.addons[__name__].preferences.preserveLocks == True:
+                self.lockSwitch('ON', currentBone)
+                if dev_mode == True: ###### DEV OUTPUT
+                    print(f' |  # Reverted rotation locks')
+
             if dev_mode == True: ###### DEV OUTPUT
                 print(f' # No more keyframes on "{currentBone.name}", moving to next bone.\n # ')
         if dev_mode == True: ###### DEV OUTPUT
@@ -296,6 +333,12 @@ class AddonPreferences(AddonPreferences, Panel):
         # update=update_jumpInitFrame
     )
 
+    preserveLocks: BoolProperty(
+        name="Preserve Locks",
+        description="Preserves lock states on rotation channels.",
+        default= True
+    )
+
     category: StringProperty(
             name="Tab Category",
             description="Choose a name for the category of the panel (default: Animation).",
@@ -311,6 +354,7 @@ class AddonPreferences(AddonPreferences, Panel):
         row.label(text="")
         row.prop(self, "devMode")
         row.prop(self, "jumpInitFrame")
+        row.prop(self, "preserveLocks")
 
         row = layout.row()
         if context.preferences.addons.find("copy_global_transform") == -1:
