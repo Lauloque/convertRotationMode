@@ -192,7 +192,8 @@ class CRM_OT_convert_rotation_mode(Operator):
 
         self.report({"INFO"}, "Successfully converted to " + CRM_Properties.targetRmode)
         
-        # context.scene.frame_current = 
+        if context.preferences.addons[__name__].preferences.jumpInitFrame == True:
+            context.scene.frame_current = initFrame
 
         return{'FINISHED'}
 
@@ -290,6 +291,26 @@ panels = (
         VIEW3D_PT_Rmodes_recommandations,
         )
 
+def update_devMode(self, context):
+    message = "Convert Rotation Mode: Toggling dev mode has failed"
+    try:
+        globals()['dev_mode'] = context.preferences.addons[__name__].preferences.devMode
+        print('dev_mode toggled')
+
+    except Exception as e:
+        print("\n[{}]\n{}\n\nError:\n{}".format(__name__, message, e))
+        pass
+
+# def update_jumpInitFrame(self, context):
+#     message = "Convert Rotation Mode: Toggling initial frame jumping has failed"
+#     try:
+#         globals()['dev_mode'] = context.preferences.addons[__name__].preferences.devMode
+#         print('dev_mode toggled')
+
+#     except Exception as e:
+#         print("\n[{}]\n{}\n\nError:\n{}".format(__name__, message, e))
+#         pass
+
 
 def update_panel(self, context):
     message = "Convert Rotation Mode: Updating Panel locations has failed"
@@ -301,16 +322,6 @@ def update_panel(self, context):
         for panel in panels:
             panel.bl_category = context.preferences.addons[__name__].preferences.category
             bpy.utils.register_class(panel)
-
-    except Exception as e:
-        print("\n[{}]\n{}\n\nError:\n{}".format(__name__, message, e))
-        pass
-
-def update_devMode(self, context):
-    message = "Convert Rotation Mode: Toggling dev mode has failed"
-    try:
-        globals()['dev_mode'] = context.preferences.addons[__name__].preferences.devMode
-        print('dev_mode toggled')
 
     except Exception as e:
         print("\n[{}]\n{}\n\nError:\n{}".format(__name__, message, e))
@@ -335,6 +346,13 @@ class AddonPreferences(AddonPreferences, Panel):
         default= False,
         update=update_devMode
         )
+    
+    jumpInitFrame: BoolProperty(
+        name="Jump to initial frame",
+        description='When done converting, jump back to the initial frame.',
+        default= True
+        # update=update_jumpInitFrame
+    )
 
     category: StringProperty(
             name="Tab Category",
@@ -351,6 +369,7 @@ class AddonPreferences(AddonPreferences, Panel):
 
         row.prop(self, "category")
         row.prop(self, "devMode")
+        row.prop(self, "jumpInitFrame")
 
         row = layout.row()
         if context.preferences.addons.find("copy_global_transform") == -1:
