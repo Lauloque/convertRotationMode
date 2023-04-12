@@ -1,7 +1,7 @@
 bl_info = {
     "name": "Convert Rotation Mode",
     "author": "Loïc \"L0Lock\" Dautry",
-    "version": (1, 2, 4),
+    "version": (1, 3, 0),
     "blender": (3, 5, 0),
     "location": "3D Viewport → Sidebar → Animation Tab",
     "category": "Animation",
@@ -44,6 +44,24 @@ class CRM_Props(PropertyGroup):
             ],
         default='XYZ'
         )
+    
+    jumpInitFrame: BoolProperty(
+        name="Jump to initial frame",
+        description='When done converting, jump back to the initial frame.',
+        default= True
+    )
+
+    preserveLocks: BoolProperty(
+        name="Preserve Locks",
+        description="Preserves lock states on rotation channels.",
+        default= True
+    )
+
+    preserveSelection: BoolProperty(
+        name="Preserve Selection",
+        description="Preserves selection.",
+        default= True
+    )
 
 
 class CRM_UI_PoseModeChecker:
@@ -169,7 +187,7 @@ class CRM_OT_convert_rotation_mode(Operator):
                     break
             
             ### Reverting lock states
-            if context.preferences.addons[__name__].preferences.preserveLocks == True:
+            if CRM_Properties.preserveLocks == True:
                 self.lockSwitch('ON', currentBone)
                 self.devOut(context, f' |  # Reverted rotation locks')
 
@@ -179,9 +197,9 @@ class CRM_OT_convert_rotation_mode(Operator):
         wm.progress_end()
         self.report({"INFO"}, f"Successfully converted {len(listBones)} bone(s) to '{CRM_Properties.targetRmode}'")
         
-        if context.preferences.addons[__name__].preferences.jumpInitFrame == True:
+        if CRM_Properties.jumpInitFrame == True:
             context.scene.frame_current = initFrame
-        if context.preferences.addons[__name__].preferences.preserveSelection == True:
+        if CRM_Properties.preserveSelection == True:
             for i in listBones:
                 i.bone.select = True
                 context.object.data.bones.active = initActive
@@ -216,6 +234,10 @@ class VIEW3D_PT_convert_rotation_mode(CRM_UI_PoseModeChecker, Panel):
         if not has_autokey:
             col.label(text="Please turn on Auto-Keying!", icon="ERROR")
         col.operator("crm.convert_rotation_mode", text="Convert!")
+        
+        col.prop(CRM_Properties, "jumpInitFrame")
+        col.prop(CRM_Properties, "preserveLocks")
+        col.prop(CRM_Properties, "preserveSelection")
 
 class VIEW3D_PT_Rmodes_recommandations(Panel):
 ##################################################
@@ -317,24 +339,6 @@ class AddonPreferences(AddonPreferences, Panel):
         description='Enables all error tracking messages.',
         default= False,
         )
-    
-    jumpInitFrame: BoolProperty(
-        name="Jump to initial frame",
-        description='When done converting, jump back to the initial frame.',
-        default= True
-    )
-
-    preserveLocks: BoolProperty(
-        name="Preserve Locks",
-        description="Preserves lock states on rotation channels.",
-        default= True
-    )
-
-    preserveSelection: BoolProperty(
-        name="Preserve Selection",
-        description="Preserves selection.",
-        default= True
-    )
 
     category: StringProperty(
             name="Tab Category",
@@ -350,9 +354,6 @@ class AddonPreferences(AddonPreferences, Panel):
         row.prop(self, "category")
         row.label(text="")
         row.prop(self, "devMode")
-        row.prop(self, "jumpInitFrame")
-        row.prop(self, "preserveLocks")
-        row.prop(self, "preserveSelection")
 
         row = layout.row()
         if context.preferences.addons.find("copy_global_transform") == -1:
