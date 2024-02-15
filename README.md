@@ -1,8 +1,6 @@
 # Convert Rotation Mode
 
-<p style="vertical-align: middle;text-align: center;">
 [![GitHub license](https://img.shields.io/github/license/L0Lock/convertRotationMode?style=for-the-badge)](https://github.com/L0Lock/convertRotationMode/blob/master/LICENSE) ![Latest Supported Blender Version](https://img.shields.io/badge/Blender-v4.0.0-orange?style=for-the-badge&logo=blender) [![ko-fi](Prez/SupportOnKofi.jpg)](https://ko-fi.com/l0lock)
-</p>
 
 -----
 
