@@ -345,7 +345,7 @@ class AddonPreferences(AddonPreferences, Panel):
     devMode: BoolProperty(
         name="Developer Mode",
         description='Enables all error tracking messages.',
-        default= True,
+        default= False,
         )
 
     category: StringProperty(
