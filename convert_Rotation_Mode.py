@@ -1,9 +1,9 @@
 bl_info = {
     "name": "Convert Rotation Mode",
     "author": "Loïc \"L0Lock\" Dautry",
-    "version": (1, 3, 0),
-    "blender": (3, 5, 0),
-    "location": "3D Viewport → Sidebar → Animation Tab",
+    "version": (1, 3, 2),
+    "blender": (4, 0, 0),
+    "location": "3D Viewport → Sidebar → Animation Tab (Pose Mode only)",
     "category": "Animation",
     "warning": "Requires the addon \"Copy Gloabl Transform\" available since Blender v3.1",
     "support": 'COMMUNITY',
@@ -45,9 +45,11 @@ class CRM_Props(PropertyGroup):
         default='XYZ'
         )
     
+    # Checkbox settings
+
     jumpInitFrame: BoolProperty(
-        name="Jump to initial frame",
-        description='When done converting, jump back to the initial frame.',
+        name="Preserve current frame",
+        description='Preserve the current frame after conversion is done.',
         default= True
     )
 
@@ -99,7 +101,7 @@ class CRM_OT_convert_rotation_mode(Operator):
         try:    return obj.animation_data.action.fcurves
         except: return None
 
-    def lockSwitch(self, mode, currentBone):
+    def toggle_rotation_locks(self, mode, currentBone):
         if mode == 'OFF':
             currentBone.lock_rotation[0] = False
             currentBone.lock_rotation[1] = False
@@ -153,12 +155,15 @@ class CRM_OT_convert_rotation_mode(Operator):
             self.locks.append(currentBone.lock_rotation[2])
             self.locks.append(currentBone.lock_rotation_w)
             self.locks.append(currentBone.lock_rotations_4d)
-            self.lockSwitch('OFF', currentBone)
+            self.toggle_rotation_locks('OFF', currentBone)
             self.devOut(context, f' |  # Backed up and unlocked rotations')
 
+
+            # initialising walk
             originalRmode = currentBone.rotation_mode
             bpy.ops.screen.frame_jump(end=False)
-            currentBone.keyframe_insert("rotation_mode", frame=1)
+            currentBone.rotation_mode = originalRmode
+            currentBone.keyframe_insert("rotation_mode", frame=1, group=currentBone.name)
             cnt = 1
 
             while context.scene.frame_current <= endFrame:
@@ -169,18 +174,19 @@ class CRM_OT_convert_rotation_mode(Operator):
                 wm.progress_update(progressCurrent)
 
                 currentBone.rotation_mode = originalRmode
-                bpy.ops.anim.keyframe_insert_by_name(type="Available")
-                self.devOut(context, f' |  |  # \"{currentBone.name}\" Rmode set to original {currentBone.rotation_mode}')
+                currentBone.keyframe_insert("rotation_mode", frame=curFrame, group=currentBone.name)
+                self.devOut(context, f' |  |  # \"{currentBone.name}\" Rmode set to {currentBone.rotation_mode}')
 
                 bpy.ops.object.copy_global_transform()
-                self.devOut(context, f' |  |  # Copied \"{currentBone.name}\" Global Transform')
+                self.devOut(context, f' |  |  # Copied \"{currentBone.name}\" Global Transform as {originalRmode}')
 
                 currentBone.rotation_mode = CRM_Properties.targetRmode
-                currentBone.keyframe_insert("rotation_mode", frame=curFrame)
+                currentBone.keyframe_insert("rotation_mode", frame=curFrame, group=currentBone.name)
                 self.devOut(context, f' |  |  # Rmnode set to {currentBone.rotation_mode}')
 
-                bpy.ops.object.paste_transform(method='CURRENT')
-                self.devOut(context, f' |  |  # Pasted \"{currentBone.name}\" Global Transform')
+
+                bpy.ops.object.paste_transform(method='CURRENT', use_mirror=False)
+                self.devOut(context, f' |  |  # Pasted \"{currentBone.name}\" Global Transform as {currentBone.rotation_mode}')
 
                 self.jumpNext(context)
                 if curFrame == context.scene.frame_current:
@@ -188,7 +194,7 @@ class CRM_OT_convert_rotation_mode(Operator):
             
             ### Reverting lock states
             if CRM_Properties.preserveLocks == True:
-                self.lockSwitch('ON', currentBone)
+                self.toggle_rotation_locks('ON', currentBone)
                 self.devOut(context, f' |  # Reverted rotation locks')
 
             self.devOut(context, f' # No more keyframes on "{currentBone.name}", moving to next bone.\n # ')
@@ -233,6 +239,8 @@ class VIEW3D_PT_convert_rotation_mode(CRM_UI_PoseModeChecker, Panel):
 
         if not has_autokey:
             col.label(text="Please turn on Auto-Keying!", icon="ERROR")
+        if not bpy.context.selected_pose_bones:
+            col.label(text="Please select a bone!", icon="ERROR")
         col.operator("crm.convert_rotation_mode", text="Convert!")
         
         col.prop(CRM_Properties, "jumpInitFrame")
@@ -337,7 +345,7 @@ class AddonPreferences(AddonPreferences, Panel):
     devMode: BoolProperty(
         name="Developer Mode",
         description='Enables all error tracking messages.',
-        default= False,
+        default= True,
         )
 
     category: StringProperty(
