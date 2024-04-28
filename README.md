@@ -28,7 +28,9 @@ Note that there are two main coordinates system for bones. Blender uses Y down, 
 
 ## Installation
 
-**Requires [Copy Global Transform addon](https://wiki.blender.org/wiki/Reference/Release_Notes/3.1/Add-ons#Copy_Global_Transform), shipped with Blender since v3.1.0. and up**
+> [!CAUTION]
+> **Requires [Copy Global Transform addon](https://wiki.blender.org/wiki/Reference/Release_Notes/3.1/Add-ons#Copy_Global_Transform), shipped with Blender since v3.1.0. and up**
+> There's a handy button in the addon's preference to enable it if needed.
 
 - Download the [**latest release**](https://github.com/L0Lock/convertRotationMode/releases/latest).
 
