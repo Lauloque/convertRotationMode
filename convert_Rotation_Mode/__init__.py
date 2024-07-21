@@ -1,8 +1,10 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
 bl_info = {
     "name": "Convert Rotation Mode",
     "author": "Loïc \"Lauloque\" Dautry",
     "version": (1, 4, 0),
     "blender": (4, 0, 0),
+    "description": "Change the rotation mode of the selected bones and preserve the animation or poses you already made.",
     "location": "3D Viewport → Sidebar → Animation Tab (Pose Mode only)",
     "category": "Animation",
     "support": 'COMMUNITY',

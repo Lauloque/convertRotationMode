@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
 import shutil, os
 
 # Target folder where to copy the addon's content.

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
 import bpy
 from bpy.types import AddonPreferences, Panel
 from bpy.props import BoolProperty, StringProperty
