@@ -4,7 +4,7 @@ import shutil, os
 # I use a custom directory to avoid having to reinstall addons at each new Blender version
 # If you want to do the same, don't forget to add that path to Blender > Edit menu > Preferences > File Paths tab > Scripts
 
-targetFolder="C:\\AppInstall\\Blender\\MyScripts\\addons"
+targetFolder="C:\\AppInstall\\Blender\\MyScripts\\addons\\conver_Rotation_Mode"
 
 # Input files and folders. See examples after ::
 # Folders will be copied with their full content.
@@ -15,12 +15,15 @@ inputFiles=[
    "convert_Rotation_Mode.py"
    ]
 
-print(__file__)
-print(os.path.join(os.path.dirname(__file__)))
-print()
+## DEBUG
+# print(__file__)
+# print(os.path.join(os.path.dirname(__file__)))
+# print()
 
-# inputFiles[1]="example_file.ext"
-# inputFiles[2]="example folder"
+# Ensure the target directory exists
+if not os.path.exists(targetFolder):
+    os.makedirs(targetFolder)
+    print(f"Created directory '{targetFolder}'.")
 
 for file in inputFiles:
     src_path = os.path.join(os.path.dirname(__file__), file)
