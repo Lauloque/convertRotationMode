@@ -56,8 +56,8 @@ def update_panel(self, context):
                 bpy.utils.unregister_class(panel)
 
         for panel in panels:
-            panel.bl_category = context.preferences.addons[__name__].preferences.category
+            panel.bl_category = context.preferences.addons[__package__].preferences.category
             bpy.utils.register_class(panel)
 
     except Exception as e:
-        print("\n[{}]\n{}\n\nError:\n{}".format(__name__, message, e))
+        print("\n[{}]\n{}\n\nError:\n{}".format(__package__, message, e))

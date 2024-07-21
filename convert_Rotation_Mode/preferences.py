@@ -4,6 +4,7 @@ from bpy.types import AddonPreferences, Panel
 from bpy.props import BoolProperty, StringProperty
 from .utils import update_panel 
 
+### CLEANUP
 # def update_panel(self, context):
 #     message = "Convert Rotation Mode: Updating Panel locations has failed"
 #     try:
@@ -20,7 +21,8 @@ from .utils import update_panel
 #         pass
         
 class AddonPreferences(AddonPreferences):
-    bl_idname = __name__
+    bl_idname = __package__
+    ### CLEANUP bl_idname = __name__
 
     devMode: BoolProperty(
         name="Developer Mode",
@@ -44,6 +46,6 @@ class AddonPreferences(AddonPreferences):
         row.prop(self, "devMode")
 
         row = layout.row()
-        if context.preferences.addons.find("copy_global_transform") == -1:
+        if context.preferences.addons.find(__package__) == -1:
             row.label(text="This addon requires the addon 'Copy Global Transform' by Sybren A. Stüvel.", icon="ERROR")
             row.operator("crm.enable_addon")
