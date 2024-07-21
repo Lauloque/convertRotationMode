@@ -23,10 +23,10 @@ print()
 # inputFiles[2]="example folder"
 
 for file in inputFiles:
-   try:
-      shutil.copy(f"{os.path.join(os.path.dirname(__file__))}\\{inputFiles[0]}", targetFolder)
-      print(f" copied '{file}' to '{targetFolder}'.")
-   except:
-      print(f" Couldn't copy '{file}' to '{targetFolder}'.")
-
-# input()
+    src_path = os.path.join(os.path.dirname(__file__), file)
+    dest_path = os.path.join(targetFolder, file)
+    try:
+        shutil.copy(src_path, dest_path)
+        print(f"copied '{file}' to '{targetFolder}'.")
+    except Exception as e:
+        print(f"Couldn't copy '{file}' to '{targetFolder}': {e}")
