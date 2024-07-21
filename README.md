@@ -1,10 +1,34 @@
 # Convert Rotation Mode
 
-[![GitHub license](https://img.shields.io/github/license/L0Lock/convertRotationMode?style=for-the-badge)](https://github.com/L0Lock/convertRotationMode/blob/master/LICENSE) ![Latest Supported Blender Version](https://img.shields.io/badge/Blender-v4.0.0-orange?style=for-the-badge&logo=blender) [![ko-fi](Prez/SupportOnKofi.jpg)](https://ko-fi.com/l0lock)
+[![GitHub license](https://img.shields.io/github/license/L0Lock/convertRotationMode?style=for-the-badge)](https://github.com/L0Lock/convertRotationMode/blob/master/LICENSE) ![Latest Supported Blender Version](https://img.shields.io/badge/Blender-v4.2.0-orange?style=for-the-badge&logo=blender) [![ko-fi](Prez/SupportOnKofi.jpg)](https://ko-fi.com/l0lock)
 
 -----
 
 *Convert Rotation Mode* (*CRM*) is an addon for Blender that allows you to change the rotation mode of the selected bones and preserve the animation or poses you already made.
+
+![feature image](Prez/Feature.png)
+
+## Installation
+
+> [!CAUTION]
+> **Requires [Copy Global Transform addon](https://wiki.blender.org/wiki/Reference/Release_Notes/3.1/Add-ons#Copy_Global_Transform), shipped with Blender since v3.1.0. and up**
+> There's a handy button in the addon's preference to enable it if needed.
+
+### Simple method:
+
+- Go to Edit > Preferences > Get Extensions
+- Search "Convert Rotation Mode"
+- Hit the Install button
+
+### Not so simple method:
+
+- Download the [**latest release**](https://github.com/L0Lock/convertRotationMode/releases/latest).
+
+- Go to Edit > Preferences > Get Extensions
+- Hit the 🔽 button > Install from Disk
+- Browse the zip file you downloaded.
+  
+![demo enable dependency](./Prez/demo_enable_dependency.gif)
 
 ## Usage:
 
@@ -25,20 +49,6 @@ If you are unsure what rotation mode to use, look at the rotation modes cheat sh
 Please not these are merely suggestions, what you will actually need may vary from one rig to another or even from one animation to another.
 
 Note that there are two main coordinates system for bones. Blender uses Y down, so this is most likely the one you will use. But you might need to look at the X down in some cases like exporting to softwares that can only ready X down.
-
-## Installation
-
-> [!CAUTION]
-> **Requires [Copy Global Transform addon](https://wiki.blender.org/wiki/Reference/Release_Notes/3.1/Add-ons#Copy_Global_Transform), shipped with Blender since v3.1.0. and up**
-> There's a handy button in the addon's preference to enable it if needed.
-
-- Download the [**latest release**](https://github.com/L0Lock/convertRotationMode/releases/latest).
-
-- In Blender, go to Edit > Preferences > Addons > Install. Browse the addon zip file.
-
-- Enable the addon. If prompted, also enable [Copy Global Transform addon](https://wiki.blender.org/wiki/Reference/Release_Notes/3.1/Add-ons#Copy_Global_Transform)
-  
-  ![demo enable dependency](./Prez/demo_enable_dependency.gif)
 
 ## Recommanded Rotation Modes:
 
