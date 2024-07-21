@@ -1,11 +1,10 @@
 bl_info = {
     "name": "Convert Rotation Mode",
-    "author": "Loïc \"L0Lock\" Dautry",
-    "version": (1, 3, 2),
+    "author": "Loïc \"Lauloque\" Dautry",
+    "version": (1, 4, 0),
     "blender": (4, 0, 0),
     "location": "3D Viewport → Sidebar → Animation Tab (Pose Mode only)",
     "category": "Animation",
-    "warning": "Requires the addon \"Copy Gloabl Transform\" available since Blender v3.1",
     "support": 'COMMUNITY',
     "doc_url": "https://github.com/L0Lock/convertRotationMode",
     "tracker_url": "https://github.com/L0Lock/convertRotationMode/issues",
@@ -22,8 +21,6 @@ from bpy.types import (
     PropertyGroup,
     AddonPreferences
     )
-
-C = bpy.context
 
 class CRM_Props(PropertyGroup):
 ##################################################
@@ -214,7 +211,7 @@ class CRM_OT_convert_rotation_mode(Operator):
         return{'FINISHED'}
 
 # remove following 'CRM_UI_PoseModeChecker' once addon functional outside pose mode.
-class VIEW3D_PT_convert_rotation_mode(CRM_UI_PoseModeChecker, Panel):
+class VIEW3D_PT_convert_rotation_mode(Panel):
 ##################################################
 # Sidebar Main UI
 
