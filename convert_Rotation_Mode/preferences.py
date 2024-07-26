@@ -40,12 +40,23 @@ class AddonPreferences(AddonPreferences):
     def draw(self, context):
         layout = self.layout
 
-        row = layout.row()
-        row.prop(self, "category")
-        row.label(text="")
-        row.prop(self, "devMode")
+        sub = layout.column()
+        split = sub.split(factor=0.15)
+        col_a = split.column()
+        col_b = split.column()
+        col_a.alignment = 'RIGHT'
+        col_b.alignment = 'LEFT'
+        col_a.label(text="Tab Category")
+        col_b.split(factor=0.5).prop(self, "category", text="")
+        # col_b.label(text="")
+        col_a.label(text="Developer Mode")
+        col_b.prop(self, "devMode", text="")
 
-        row = layout.row()
+        
         if context.preferences.addons.find("copy_global_transform") == -1:
+            row = layout.row(align=False)
+            row.alignment = 'CENTER'
             row.label(text="This addon requires the addon 'Copy Global Transform' by Sybren A. Stüvel.", icon="ERROR")
+            row = layout.row(align=False)
+            row.alignment = 'CENTER'
             row.operator("crm.enable_addon")
