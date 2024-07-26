@@ -21,16 +21,31 @@ class VIEW3D_PT_convert_rotation_mode(Panel):
         has_autokey = scene.tool_settings.use_keyframe_insert_auto
 
         col = layout.column(align=True)
-
         col.label(text="Target Rotation Mode")
         col.prop(CRM_Properties, "targetRmode", text="")
 
+        if context.preferences.addons.find("copy_global_transform") == -1:
+            row = col.row(align=False)
+            row.alignment = 'CENTER'
+            row.label(text="Required:", icon="ERROR")
+            row = col.row(align=False)
+            row.alignment = 'CENTER'
+            row.label(text="'Copy Global Transform'")
+            row = col.row(align=False)
+            row.alignment = 'CENTER'
+            row.operator("crm.enable_addon", text="Enable")
+            row = col.row(align=False)
+            row.alignment = 'CENTER'
+            row.label(text="---")
         if not has_autokey:
+            col = layout.column(align=True)
             col.label(text="Please turn on Auto-Keying!", icon="ERROR")
         if not bpy.context.selected_pose_bones:
+            col = layout.column(align=True)
             col.label(text="Please select a bone!", icon="ERROR")
-        col.operator("crm.convert_rotation_mode", text="Convert!")
 
+        col = layout.column(align=True)
+        col.operator("crm.convert_rotation_mode", text="Convert!")
         col.prop(CRM_Properties, "jumpInitFrame")
         col.prop(CRM_Properties, "preserveLocks")
         col.prop(CRM_Properties, "preserveSelection")
