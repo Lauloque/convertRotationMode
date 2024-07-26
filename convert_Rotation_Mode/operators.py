@@ -20,6 +20,9 @@ class CRM_OT_convert_rotation_mode(Operator):
         CRM_Properties = scene.CRM_Properties
         wm = bpy.context.window_manager
 
+        has_autokey = scene.tool_settings.use_keyframe_insert_auto
+        scene.tool_settings.use_keyframe_insert_auto = True
+
         initActive = context.object.data.bones.active
         listBones = context.selected_pose_bones
         startFrame = context.scene.frame_start
@@ -98,6 +101,7 @@ class CRM_OT_convert_rotation_mode(Operator):
                    bone.bone.select = True
                context.object.data.bones.active = initActive
 
+        scene.tool_settings.use_keyframe_insert_auto = has_autokey
         return {'FINISHED'}
 
 class CRM_OT_enableAddon(Operator):

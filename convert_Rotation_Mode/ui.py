@@ -18,8 +18,6 @@ class VIEW3D_PT_convert_rotation_mode(Panel):
         scene = context.scene
         CRM_Properties = scene.CRM_Properties
 
-        has_autokey = scene.tool_settings.use_keyframe_insert_auto
-
         col = layout.column(align=True)
         col.label(text="Target Rotation Mode")
         col.prop(CRM_Properties, "targetRmode", text="")
@@ -37,9 +35,6 @@ class VIEW3D_PT_convert_rotation_mode(Panel):
             row = col.row(align=False)
             row.alignment = 'CENTER'
             row.label(text="---")
-        if not has_autokey:
-            col = layout.column(align=True)
-            col.label(text="Please turn on Auto-Keying!", icon="ERROR")
         if not bpy.context.selected_pose_bones:
             col = layout.column(align=True)
             col.label(text="Please select a bone!", icon="ERROR")
