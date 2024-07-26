@@ -12,20 +12,10 @@ class CRM_OT_convert_rotation_mode(Operator):
 
     @classmethod
     def poll(cls, context):
-        # return context.preferences.addons.find("copy_global_transform") != -1 and len(context.selected_pose_bones) > 0
-        addon_available = context.preferences.addons.find("copy_global_transform") != -1
-        bones_selected = len(context.selected_pose_bones) > 0
-        print(f"Addon available: {addon_available}, Bones selected: {bones_selected}")
-        return addon_available and bones_selected
+        return context.preferences.addons.find("copy_global_transform") != -1 and len(context.selected_pose_bones) > 0
 
 
     def execute(self, context):
-
-        if context.preferences.addons.find("copy_global_transform") == -1:
-            self.report({'WARNING'}, "Please enable the 'Copy Global Transform' addon.")
-            print("Canceling. Please enable the 'Copy Global Transform' addon.")
-            return {'CANCELLED'}
-
         scene = context.scene
         CRM_Properties = scene.CRM_Properties
         wm = bpy.context.window_manager
