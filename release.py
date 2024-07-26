@@ -63,7 +63,7 @@ def create_zip(base_path, version):
     #             arcname = os.path.relpath(file_path, os.path.join(base_path, 'convert_Rotation_Mode'))
     #             zipf.write(file_path, arcname)
     command = '"C:\\AppInstall\\Blender\\stable\\blender-4.2.0-stable.a51f293548ad\\blender.exe" '
-    command += '--command extension build --source-dir "C:\\Users\\Lauloque\\Documents\\Repositories\\convertRotationMode\\convert_Rotation_Mode" '
+    command += '--factory-startup --command extension build --source-dir "C:\\Users\\Lauloque\\Documents\\Repositories\\convertRotationMode\\convert_Rotation_Mode" '
     command += f'--output-filepath "C:\\Users\\Lauloque\\Documents\\Repositories\\convertRotationMode\\Releases\\extension__convert_Rotation_Mode_v{version[0]}-{version[1]}-{version[2]}.zip"'
     subprocess.call(command)
 
