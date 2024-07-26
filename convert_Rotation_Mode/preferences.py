@@ -46,6 +46,6 @@ class AddonPreferences(AddonPreferences):
         row.prop(self, "devMode")
 
         row = layout.row()
-        if context.preferences.addons.find(__package__) == -1:
+        if context.preferences.addons.find("copy_global_transform") == -1:
             row.label(text="This addon requires the addon 'Copy Global Transform' by Sybren A. Stüvel.", icon="ERROR")
             row.operator("crm.enable_addon")
