@@ -5,7 +5,7 @@ import shutil, os
 # I use a custom directory to avoid having to reinstall addons at each new Blender version
 # If you want to do the same, don't forget to add that path to Blender > Edit menu > Preferences > File Paths tab > Scripts
 
-targetFolder="C:\\AppInstall\\Blender\\MyScripts\\addons"
+targetFolder="C:\\AppInstall\\Blender\\MyScripts\\extensions"
 
 # Input files and folders. See examples after ::
 # Folders will be copied with their full content.
