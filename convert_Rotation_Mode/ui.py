@@ -31,7 +31,7 @@ class VIEW3D_PT_convert_rotation_mode(Panel):
             row.label(text="'Copy Global Transform'")
             row = col.row(align=False)
             row.alignment = 'CENTER'
-            row.operator("crm.enable_addon", text="Enable")
+            row.operator("preferences.addon_enable", text="Enable").module="copy_global_transform"
             row = col.row(align=False)
             row.alignment = 'CENTER'
             row.label(text="---")

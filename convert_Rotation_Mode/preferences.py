@@ -59,4 +59,4 @@ class AddonPreferences(AddonPreferences):
             row.label(text="This addon requires the addon 'Copy Global Transform' by Sybren A. Stüvel.", icon="ERROR")
             row = layout.row(align=False)
             row.alignment = 'CENTER'
-            row.operator("crm.enable_addon")
+            row.operator("preferences.addon_enable").module="copy_global_transform"
