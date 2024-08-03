@@ -101,5 +101,4 @@ class VIEW3D_PT_Rmodes_recommandations(Panel):
 panels = [
     VIEW3D_PT_convert_rotation_mode,
     VIEW3D_PT_Rmodes_recommandations,
-    # add other panels as needed
 ]
