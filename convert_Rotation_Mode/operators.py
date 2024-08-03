@@ -103,12 +103,3 @@ class CRM_OT_convert_rotation_mode(Operator):
 
         scene.tool_settings.use_keyframe_insert_auto = has_autokey
         return {'FINISHED'}
-
-class CRM_OT_enableAddon(Operator):
-    bl_idname = 'crm.enable_addon'
-    bl_label = "Enable 'Copy Global Transform'"
-    bl_options = {'UNDO', 'INTERNAL'}
-
-    def execute(self, context):
-        bpy.ops.preferences.addon_enable(module="copy_global_transform")
-        return {'FINISHED'}

@@ -2,8 +2,6 @@
 import bpy
 from bpy.types import Panel
 from bpy.types import Context
-### CLEANUP
-# from .operators import CRM_UI_PoseModeChecker
 
 class VIEW3D_PT_convert_rotation_mode(Panel):
     bl_space_type = 'VIEW_3D'

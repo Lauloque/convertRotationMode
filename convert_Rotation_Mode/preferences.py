@@ -3,26 +3,9 @@ import bpy
 from bpy.types import AddonPreferences, Panel
 from bpy.props import BoolProperty, StringProperty
 from .utils import update_panel 
-
-### CLEANUP
-# def update_panel(self, context):
-#     message = "Convert Rotation Mode: Updating Panel locations has failed"
-#     try:
-#         for panel in panels:
-#             if "bl_rna" in panel.__dict__:
-#                 bpy.utils.unregister_class(panel)
-
-#         for panel in panels:
-#             panel.bl_category = context.preferences.addons[__name__].preferences.category
-#             bpy.utils.register_class(panel)
-
-#     except Exception as e:
-#         print("\n[{}]\n{}\n\nError:\n{}".format(__name__, message, e))
-#         pass
         
 class AddonPreferences(AddonPreferences):
     bl_idname = __package__
-    ### CLEANUP bl_idname = __name__
 
     devMode: BoolProperty(
         name="Developer Mode",
@@ -48,7 +31,6 @@ class AddonPreferences(AddonPreferences):
         col_b.alignment = 'LEFT'
         col_a.label(text="Tab Category")
         col_b.split(factor=0.5).prop(self, "category", text="")
-        # col_b.label(text="")
         col_a.label(text="Developer Mode")
         col_b.prop(self, "devMode", text="")
 
