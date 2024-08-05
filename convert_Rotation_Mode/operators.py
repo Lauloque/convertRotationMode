@@ -36,9 +36,6 @@ class CRM_OT_convert_rotation_mode(Operator):
         progressMax = amount * duration
         wm.progress_begin(0, progressMax)
 
-        devOut(context, '##################\n### test message devMode\n############')
-        devOut(context, f'# i like my {endFrame}')
-
         for currentBone in listBones:
 
             bpy.ops.pose.select_all(action='DESELECT')

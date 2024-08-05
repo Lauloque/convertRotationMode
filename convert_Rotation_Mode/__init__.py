@@ -3,8 +3,8 @@
 # bl_info = {
 #     "name": "Convert Rotation Mode",
 #     "author": "Loïc \"Lauloque\" Dautry",
-#     "version": (1, 4, 2),
-#     "blender": (4, 0, 0),
+#     "version": (1, 4, 3),
+#     "blender": (4, 2, 0),
 #     "description": "Change the rotation mode of the selected bones and preserve the animation or poses you already made.",
 #     "location": "3D Viewport → Sidebar → Animation Tab (Pose Mode only)",
 #     "category": "Animation",

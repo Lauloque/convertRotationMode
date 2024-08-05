@@ -1,6 +1,6 @@
 schema_version = "1.0.0"
 id = "convert_rotation_mode"
-version = "1.4.2"
+version = "1.4.3"
 name = "Convert Rotation Mode"
 tagline = "Change rotation mode whilst preserving animation"
 maintainer = "Loïc \"Lauloque\" Dautry"
