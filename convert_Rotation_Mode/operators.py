@@ -12,7 +12,9 @@ class CRM_OT_convert_rotation_mode(Operator):
 
     @classmethod
     def poll(cls, context):
-        return context.preferences.addons.find("copy_global_transform") != -1 and len(context.selected_pose_bones) > 0
+        if context.preferences.addons.find("copy_global_transform") != -1 and bpy.context.mode == 'POSE':
+                return len(context.selected_pose_bones) > 0
+        return False > 0
 
 
     def execute(self, context):
