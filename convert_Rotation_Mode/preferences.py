@@ -22,17 +22,10 @@ class AddonPreferences(AddonPreferences):
 
     def draw(self, context):
         layout = self.layout
+        layout.use_property_split = True
+        layout.prop(self, "category", text="Tab Name")
+        layout.prop(self, "devMode", text="Dev Mode")
 
-        sub = layout.column()
-        split = sub.split(factor=0.15)
-        col_a = split.column()
-        col_b = split.column()
-        col_a.alignment = 'RIGHT'
-        col_b.alignment = 'LEFT'
-        col_a.label(text="Tab Category")
-        col_b.split(factor=0.5).prop(self, "category", text="")
-        col_a.label(text="Developer Mode")
-        col_b.prop(self, "devMode", text="")
 
         
         if context.preferences.addons.find("copy_global_transform") == -1:
