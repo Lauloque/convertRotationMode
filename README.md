@@ -121,3 +121,15 @@ Note that there are two main coordinates system for bones. Blender uses Y down, 
 - head: yxz
 
 </details>
+
+## Contributing
+
+I recently started using [PyType](https://github.com/google/pytype) type-checker. While I'm not sure it's a big deal whether you use it, or another one, or none at all, it definitely helps avoid issues if we all use the same. Hence furnished the repowith its own [requirements.txt](https://github.com/L0Lock/convertRotationMode/blob/main/requirements.txt). 
+
+To use it, create a virtual environment in your local repo ([see guide here, its a tad different for each operating system](https://www.geeksforgeeks.org/create-virtual-environment-using-venv-python/), then once created and activated, install the required packages using:
+
+```bash
+pip install -r requirements.txt
+```
+
+This way we are sure to be on the same base :] 
