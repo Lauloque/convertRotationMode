@@ -1,17 +1,17 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
-### CLEANUP
-# bl_info = {
-#     "name": "Convert Rotation Mode",
-#     "author": "Loïc \"Lauloque\" Dautry",
-#     "version": (1, 4, 3),
-#     "blender": (4, 2, 0),
-#     "description": "Change the rotation mode of the selected bones and preserve the animation or poses you already made.",
-#     "location": "3D Viewport → Sidebar → Animation Tab (Pose Mode only)",
-#     "category": "Animation",
-#     "support": 'COMMUNITY',
-#     "doc_url": "https://github.com/L0Lock/convertRotationMode",
-#     "tracker_url": "https://github.com/L0Lock/convertRotationMode/issues",
-# }
+
+bl_info = {
+    "name": "Convert Rotation Mode",
+    "author": "Loïc \"Lauloque\" Dautry",
+    "version": (1, 4, 3),
+    "blender": (4, 3, 2),
+    "description": "Change the rotation mode of the selected bones and preserve the animation or poses you already made.",
+    "location": "3D Viewport → Sidebar → Animation Tab (Pose Mode only)",
+    "category": "Animation",
+    "support": 'COMMUNITY',
+    "doc_url": "https://github.com/L0Lock/convertRotationMode",
+    "tracker_url": "https://github.com/L0Lock/convertRotationMode/issues",
+}
 
 import bpy
 from .operators import CRM_OT_convert_rotation_mode
