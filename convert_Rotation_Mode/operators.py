@@ -112,6 +112,16 @@ class CRM_OT_convert_rotation_mode(Operator):
                     f" |  |  # Pasted '{currentBone.name}' Global Transform as"
                     f" {currentBone.rotation_mode}"
                 )
+                for path in (
+                    "rotation_axis_angle",
+                    "rotation_euler",
+                    "rotation_mode",
+                    "rotation_quaternion",
+                ):
+                    currentBone.keyframe_insert(data_path=path)
+                dprint(
+                    f" |  |  # Keyframed '{currentBone.name}' rotations"
+                )
 
                 jump_next_frame(context)
                 if curFrame == context.scene.frame_current:
@@ -122,7 +132,7 @@ class CRM_OT_convert_rotation_mode(Operator):
                 dprint(" |  # Reverted rotation locks")
 
             dprint(
-                f" # No more keyframes on '{currentBone.name}'.\n #"
+                f" # No more keyframes on '{currentBone.name}'.#"
             )
         dprint(" # No more bones to work on.")
 
