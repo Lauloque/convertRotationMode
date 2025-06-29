@@ -1,6 +1,6 @@
 # Convert Rotation Mode
 
-[![GitHub license](https://img.shields.io/github/license/L0Lock/convertRotationMode?style=for-the-badge)](https://github.com/L0Lock/convertRotationMode/blob/master/LICENSE) ![Latest Supported Blender Version](https://img.shields.io/badge/Blender-v4.2.0-orange?style=for-the-badge&logo=blender) [![ko-fi](Prez/SupportOnKofi.jpg)](https://ko-fi.com/l0lock)
+[![GitHub license](https://img.shields.io/github/license/L0Lock/convertRotationMode?style=for-the-badge&labelColor=rgb(64,64,64)](https://github.com/L0Lock/convertRotationMode/blob/master/LICENSE) ![Minimum Supported Blender Version](https://img.shields.io/badge/Blender-4.2LTS+-green?style=for-the-badge&logo=blender&logoColor=white&labelColor=rgb(64,64,64)) [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/H2H818FHX)
 
 -----
 
@@ -25,9 +25,11 @@
 - Download the [**latest release**](https://github.com/L0Lock/convertRotationMode/releases/latest).
 
 - Go to Edit > Preferences > Get Extensions
+
 - Hit the 🔽 button > Install from Disk
+
 - Browse the zip file you downloaded.
-  
+
 ![demo enable dependency](./Prez/demo_enable_dependency.gif)
 
 ## Usage:
@@ -52,75 +54,20 @@ Note that there are two main coordinates system for bones. Blender uses Y down, 
 
 ## Recommanded Rotation Modes:
 
-<details>
-
-<summary>
-
-### For Y down coordinates (Blender):
-
-</summary>
-
-- COG: zxy
-
-- Hip: zxy
-
-- leg joints: yzx
-
-- shoulder/clav: yxz
-
-- upper arm: zyx (or yzx)
-
-- lower arm: zyx (or yzx)
-
-- wrist: yzx
-
-- spine base: zxy
-
-- mid spine: yzx
-
-- chest: zxy
-
-- neck: yxz
-
-- head: yxz
-
-</details>
-
-<details>
-
-<summary>
-
-### For X down coordinates
-
-</summary>
-
-- COG: zxy
-
-- Hip: zxy
-
-- leg joints: xzy
-
-- shoulder/clav: xyz
-
-- upper arm: zxy
-
-- lower arm: zxy
-
-- wrist: xyz (or yzx?)
-
-- fingers: yzx
-
-- spine base: zxy
-
-- mid spine: xzy
-
-- chest: zxy
-
-- neck: yxz
-
-- head: yxz
-
-</details>
+| Bone/Body Part    | Rotation Mode |
+| ----------------- | ------------- |
+| COG               | zxy           |
+| Hip               | zxy           |
+| Leg Joints        | yzx           |
+| Shoulder/Clavicle | yxz           |
+| Upper Arm         | zyx (or yzx)  |
+| Lower Arm         | zyx (or yzx)  |
+| Wrist             | yzx           |
+| Spine Base        | zxy           |
+| Mid Spine         | yzx           |
+| Chest             | zxy           |
+| Neck              | yxz           |
+| Head              | yxz           |
 
 ## Contributing
 
