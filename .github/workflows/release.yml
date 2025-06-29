@@ -20,14 +20,29 @@ jobs:
         id: version
         run: |
           if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
-            # Manual run - find the latest zip file in Releases folder
-            latest_zip=$(ls -t Releases/*.zip 2>/dev/null | head -n1 || true)
+            # Manual run - find the zip file with the highest version number
+            latest_zip=""
+            latest_version=""
+            
+            for zip in Releases/*.zip 2>/dev/null; do
+              if [[ -f "$zip" ]]; then
+                filename=$(basename "$zip")
+                version=$(echo "$filename" | sed 's/.*-\(.*\)\.zip/\1/')
+                
+                if [[ -z "$latest_version" ]] || printf '%s\n%s\n' "$latest_version" "$version" | sort -V | tail -n1 | grep -q "^$version$"; then
+                  latest_version="$version"
+                  latest_zip="$zip"
+                fi
+              fi
+            done
+            
             if [[ -z "$latest_zip" ]]; then
               echo "No zip files found in Releases folder"
               exit 1
             fi
+            
             zip_file="$latest_zip"
-            echo "Manual dispatch: using latest zip file: $zip_file"
+            echo "Manual dispatch: using zip with highest version: $zip_file (v$latest_version)"
           else
             # Push event - find newly added zip files
             new_files=$(git diff --name-only --diff-filter=A HEAD~1 HEAD | grep "^Releases/.*\.zip$" || true)
