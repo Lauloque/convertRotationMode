@@ -9,10 +9,14 @@ class AddonPreferences(AddonPreferences):
     """Addon's preferences"""
     bl_idname = __package__
 
-    devMode: BoolProperty(
-        name="Developer Mode",
-        description='Enables all error tracking messages.',
-        default=False,
+    developer_print: bpy.props.BoolProperty(
+        name="Enable Developer Log in System Console",
+        description=(
+            "Helps with debugging issues in the addon.\n"
+            "Please use this for any bug report.\n"
+            "Keep it disabled for better performances."
+        ),
+        default=False
     )
 
     category: StringProperty(

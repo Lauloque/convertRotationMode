@@ -1,16 +1,13 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
-import bpy, sys
+import bpy
 from .ui import panels
 
 
-def devOut(context, msg):
-    """Prints debug messages if developer mode is enabled."""
-    addon_id = "convert_rotation_mode"  # Replace with your actual addon ID
-    if addon_id in context.preferences.addons:
-        if context.preferences.addons[addon_id].preferences.devMode:
-            print(msg)
-    else:
-        print(f"Addon '{addon_id}' is not found in preferences.")
+def dprint(message: str):
+    """Prints in the system console if the addon's developer printing is ON"""
+    prefs = bpy.context.preferences.addons[__package__].preferences
+    if prefs.developer_print:
+        print(f"[Convert Rot Mode]: {message}")
 
 
 def get_fcurves(obj):
@@ -48,12 +45,9 @@ def toggle_rotation_locks(bone, mode, locks=None):
         bone.lock_rotation_w = locks[3]
         bone.lock_rotations_4d = locks[4]
 
-        print(f"Addon ID '{addon_id}' not found in preferences.")
-
 
 def update_panel(self, context):
     """Update tab in which to place the panel"""
-    message = "Convert Rotation Mode: Updating Panel locations has failed"
     try:
         # Ensure 'panels' is defined or imported
         from .ui import panels  # Import panels from the appropriate module
@@ -68,4 +62,5 @@ def update_panel(self, context):
             bpy.utils.register_class(panel)
 
     except Exception as e:
-        print("\n[{}]\n{}\n\nError:\n{}".format(__package__, message, e))
+        message = "Updating Panel locations has failed"
+        dprint("\n[{}]\n{}\n\nError:\n{}".format(__package__, message, e))

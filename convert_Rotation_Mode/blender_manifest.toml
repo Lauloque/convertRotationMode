@@ -1,11 +1,11 @@
 schema_version = "1.0.0"
 id = "convert_rotation_mode"
-version = "1.4.4"
+version = "1.4.5"
 name = "Convert Rotation Mode"
 tagline = "Change rotation mode whilst preserving animation"
 maintainer = "Loïc \"Lauloque\" Dautry"
 type = "add-on"
-website = "https://github.com/L0Lock/convertRotationMode"
+website = "https://github.com/Lauloque/convertRotationMode"
 
 # Optional list defined by Blender and server, see:
 # https://docs.blender.org/manual/en/dev/advanced/extensions/tags.html

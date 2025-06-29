@@ -3,6 +3,7 @@ import bpy
 from bpy.props import EnumProperty, BoolProperty
 from bpy.types import PropertyGroup
 
+
 class CRM_Props(PropertyGroup):
     targetRmode: EnumProperty(
         name='Target Rotation Mode',
