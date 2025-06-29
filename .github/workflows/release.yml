@@ -1,0 +1,70 @@
+name: Draft a new Release on zip push
+
+on:
+  push:
+    paths:
+      - "Releases/*.zip"
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Get new zip file and extract version
+        id: version
+        run: |
+          new_files=$(git diff --name-only --diff-filter=A HEAD~1 HEAD | grep "^Releases/.*\.zip$" || true)
+          if [[ -z "$new_files" ]]; then
+            echo "No new zip files added, exiting"
+            exit 0
+          fi
+          
+          zip_file=$(echo "$new_files" | head -n1)
+          filename=$(basename "$zip_file")
+          version=$(echo "$filename" | sed 's/bl_reset_custom_properties-\(.*\)\.zip/\1/')
+          
+          echo "tag=${version}" >> $GITHUB_OUTPUT
+          echo "zip_file=${zip_file}" >> $GITHUB_OUTPUT
+          echo "Found new zip: $zip_file, version: $version"
+
+      - name: Create tag
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          tag="${{ steps.version.outputs.tag }}"
+          
+          if git rev-parse --verify "refs/tags/${tag}" >/dev/null 2>&1; then
+            echo "Tag ${tag} already exists"
+          else
+            echo "Creating tag ${tag}"
+            git config user.name "github-actions[bot]"
+            git config user.email "github-actions[bot]@users.noreply.github.com"
+            git tag -a "${tag}" -m "Release ${tag}"
+            git push origin "${tag}"
+          fi
+
+      - name: Create release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          tag="${{ steps.version.outputs.tag }}"
+          zip_file="${{ steps.version.outputs.zip_file }}"
+          
+          if gh release view "$tag" >/dev/null 2>&1; then
+            echo "Release $tag already exists, skipping"
+            exit 0
+          fi
+          
+          gh release create "$tag" \
+            --title="Release $tag" \
+            --draft \
+            --generate-notes \
+            "$zip_file"
+          
+          echo "Created draft release: $tag"
