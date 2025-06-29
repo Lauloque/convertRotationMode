@@ -1,6 +1,6 @@
 schema_version = "1.0.0"
 id = "convert_rotation_mode"
-version = "1.4.3"
+version = "1.4.4"
 name = "Convert Rotation Mode"
 tagline = "Change rotation mode whilst preserving animation"
 maintainer = "Loïc \"Lauloque\" Dautry"
@@ -11,7 +11,7 @@ website = "https://github.com/L0Lock/convertRotationMode"
 # https://docs.blender.org/manual/en/dev/advanced/extensions/tags.html
 tags = ["Animation", "3D View", "Bake"]
 
-blender_version_min = "4.3.2"
+blender_version_min = "4.2.0"
 # blender_version_max = "5.1.0"
 
 # License conforming to https://spdx.org/licenses/ (use "SPDX: prefix)
