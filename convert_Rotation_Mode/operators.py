@@ -47,11 +47,9 @@ class CRM_OT_convert_rotation_mode(Operator):
             context.object.data.bones.active = currentBone.bone
             currentBone.bone.select = True
             dprint(
-                context,
                 f"### Working on bone '{currentBone.bone.name}' ###"
             )
             dprint(
-                context,
                 f" # Target Rmode will be {CRM_Properties.targetRmode}"
             )
 
@@ -62,7 +60,7 @@ class CRM_OT_convert_rotation_mode(Operator):
             self.locks.append(currentBone.lock_rotation_w)
             self.locks.append(currentBone.lock_rotations_4d)
             toggle_rotation_locks('OFF', currentBone)
-            dprint(context, f" |  # Backed up and unlocked rotations")
+            dprint(" |  # Backed up and unlocked rotations")
 
             originalRmode = currentBone.rotation_mode
             bpy.ops.screen.frame_jump(end=False)
@@ -76,7 +74,7 @@ class CRM_OT_convert_rotation_mode(Operator):
 
             while context.scene.frame_current <= endFrame:
                 curFrame = context.scene.frame_current
-                dprint(context, f" |  # Jumped to frame {curFrame}")
+                dprint(f" |  # Jumped to frame {curFrame}")
                 progressCurrent = cnt * curFrame
                 wm.progress_update(progressCurrent)
 
@@ -87,16 +85,14 @@ class CRM_OT_convert_rotation_mode(Operator):
                     group=currentBone.name
                 )
                 dprint(
-                    context,
                     f" |  |  # '{currentBone.name}' Rmode set to "
-                    "{currentBone.rotation_mode}"
+                    f"{currentBone.rotation_mode}"
                 )
 
                 bpy.ops.object.copy_global_transform()
                 dprint(
-                    context,
                     f" |  |  # Copied '{currentBone.name}' Global "
-                    "Transform as {originalRmode}"
+                    f"Transform as {originalRmode}"
                 )
 
                 currentBone.rotation_mode = CRM_Properties.targetRmode
@@ -105,7 +101,6 @@ class CRM_OT_convert_rotation_mode(Operator):
                     frame=curFrame,
                     group=currentBone.name)
                 dprint(
-                    context,
                     f" |  |  # Rmode set to {currentBone.rotation_mode}"
                 )
 
@@ -114,9 +109,8 @@ class CRM_OT_convert_rotation_mode(Operator):
                     use_mirror=False
                 )
                 dprint(
-                    context,
                     f" |  |  # Pasted '{currentBone.name}' Global Transform as"
-                    " {currentBone.rotation_mode}"
+                    f" {currentBone.rotation_mode}"
                 )
 
                 jump_next_frame(context)
@@ -125,19 +119,18 @@ class CRM_OT_convert_rotation_mode(Operator):
 
             if CRM_Properties.preserveLocks:
                 toggle_rotation_locks('ON', currentBone)
-                dprint(context, " |  # Reverted rotation locks")
+                dprint(" |  # Reverted rotation locks")
 
             dprint(
-                context,
                 f" # No more keyframes on '{currentBone.name}'.\n #"
             )
-        dprint(context, " # No more bones to work on.")
+        dprint(" # No more bones to work on.")
 
         wm.progress_end()
         self.report(
             {"INFO"},
             f"Successfully converted {len(listBones)} bone(s) to "
-            "'{CRM_Properties.targetRmode}'"
+            f"'{CRM_Properties.targetRmode}'"
         )
 
         if CRM_Properties.jumpInitFrame:
