@@ -24,7 +24,7 @@ jobs:
             latest_zip=""
             latest_version=""
             
-            for zip in Releases/*.zip 2>/dev/null; do
+            for zip in Releases/*.zip; do
               if [[ -f "$zip" ]]; then
                 filename=$(basename "$zip")
                 version=$(echo "$filename" | sed 's/.*-\(.*\)\.zip/\1/')
