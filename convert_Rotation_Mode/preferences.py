@@ -31,7 +31,9 @@ class AddonPreferences(AddonPreferences):
         layout = self.layout
         layout.use_property_split = True
         layout.prop(self, "category", text="Tab Name")
-        layout.prop(self, "devMode", text="Dev Mode")
+        row = layout.row()
+        row.prop(self, "developer_print")
+        row.operator("wm.console_toggle", icon="CONSOLE", text="")
 
         if context.preferences.addons.find("copy_global_transform") == -1:
             row = layout.row(align=False)
