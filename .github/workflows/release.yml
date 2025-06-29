@@ -27,7 +27,7 @@ jobs:
           
           zip_file=$(echo "$new_files" | head -n1)
           filename=$(basename "$zip_file")
-          version=$(echo "$filename" | sed 's/bl_reset_custom_properties-\(.*\)\.zip/\1/')
+          version=$(echo "$filename" | sed 's/.*-\(.*\)\.zip/\1/')
           
           echo "tag=${version}" >> $GITHUB_OUTPUT
           echo "zip_file=${zip_file}" >> $GITHUB_OUTPUT
