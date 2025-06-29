@@ -3,6 +3,7 @@ import bpy
 from bpy.types import Panel
 from bpy.types import Context
 
+
 class VIEW3D_PT_convert_rotation_mode(Panel):
     bl_space_type = 'VIEW_3D'
     bl_region_type = 'UI'
@@ -10,6 +11,7 @@ class VIEW3D_PT_convert_rotation_mode(Panel):
     bl_label = "Convert Rotation Mode"
 
     def draw(self, context: Context) -> None:
+        """Draw main panel"""
         layout = self.layout
 
         obj = context.object
@@ -29,7 +31,10 @@ class VIEW3D_PT_convert_rotation_mode(Panel):
             row.label(text="'Copy Global Transform'")
             row = col.row(align=False)
             row.alignment = 'CENTER'
-            row.operator("preferences.addon_enable", text="Enable").module="copy_global_transform"
+            row.operator(
+                "preferences.addon_enable",
+                text="Enable"
+            ).module="copy_global_transform"
             row = col.row(align=False)
             row.alignment = 'CENTER'
             row.label(text="---")
@@ -43,6 +48,7 @@ class VIEW3D_PT_convert_rotation_mode(Panel):
         col.prop(CRM_Properties, "preserveLocks")
         col.prop(CRM_Properties, "preserveSelection")
 
+
 class VIEW3D_PT_Rmodes_recommandations(Panel):
     bl_space_type = 'VIEW_3D'
     bl_region_type = 'UI'
@@ -52,6 +58,7 @@ class VIEW3D_PT_Rmodes_recommandations(Panel):
     bl_options = {'DEFAULT_CLOSED'}
 
     def draw(self, context):
+        """Draw recommandations panel"""
         layout = self.layout
 
         grid = layout.grid_flow(columns=3, align=True, even_columns=True)
@@ -97,6 +104,7 @@ class VIEW3D_PT_Rmodes_recommandations(Panel):
         grid.label(text="ZXY")
         grid.label(text="YXZ")
         grid.label(text="YXZ")
+
 
 panels = [
     VIEW3D_PT_convert_rotation_mode,
