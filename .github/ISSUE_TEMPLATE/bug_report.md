@@ -3,7 +3,7 @@ name: Bug report
 about: Create a report to help me improve the addon
 title: '[Bug] '
 labels: ''
-assignees: L0Lock
+assignees: Lauloque
 
 ---
 
@@ -27,7 +27,7 @@ Worked: (optional)
 
 **Dev log:**
 [Optional but I'll probably ask it most of the time anyway.]
-[Open a new Blender. Enable the "Dev Mode" in the addon's preferences, then use the menu Window > Toggle System Console. Reproduce the issue, and copy the console's content, and paste it below, or save it as a text file if it's too big and join it to the ticket]
+[Open a new Blender. Enable the "Dev log" in the addon's preferences, then use the menu Window > Toggle System Console. Reproduce the issue, and copy the console's content, and paste it below, or save it as a text file if it's too big and join it to the ticket]
 
 ```py
 paste log here
