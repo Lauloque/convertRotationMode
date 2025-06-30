@@ -2,7 +2,14 @@
 import bpy
 from bpy.types import Operator
 from bpy.types import Context
-from .utils import dprint, is_pose_mode, get_fcurves, toggle_rotation_locks, jump_next_frame
+from .utils import (
+    dprint,
+    is_pose_mode,
+    get_fcurves,
+    get_rotation_locks,
+    toggle_rotation_locks,
+    jump_next_frame,
+)
 
 
 class CRM_OT_convert_rotation_mode(Operator):
@@ -53,13 +60,8 @@ class CRM_OT_convert_rotation_mode(Operator):
                 f" # Target Rmode will be {CRM_Properties.targetRmode}"
             )
 
-            # self.locks = []
-            self.locks.append(current_bone.lock_rotation[0])
-            self.locks.append(current_bone.lock_rotation[1])
-            self.locks.append(current_bone.lock_rotation[2])
-            self.locks.append(current_bone.lock_rotation_w)
-            self.locks.append(current_bone.lock_rotations_4d)
-            toggle_rotation_locks('OFF', current_bone)
+            locks = get_rotation_locks(current_bone)
+            toggle_rotation_locks(current_bone, 'OFF')
             dprint(" |  # Backed up and unlocked rotations")
 
             original_rmode = current_bone.rotation_mode
@@ -128,7 +130,7 @@ class CRM_OT_convert_rotation_mode(Operator):
                     break
 
             if CRM_Properties.preserveLocks:
-                toggle_rotation_locks('ON', current_bone)
+                toggle_rotation_locks(current_bone, 'ON', locks)
                 dprint(" |  # Reverted rotation locks")
 
             dprint(
