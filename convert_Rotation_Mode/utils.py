@@ -18,6 +18,14 @@ def get_fcurves(obj):
         return None
 
 
+def get_rotation_locks(bone):
+    """Return the current rotation lock state of the bone as a list."""
+    return list(bone.lock_rotation) + [
+        bone.lock_rotation_w,
+        bone.lock_rotations_4d,
+    ]
+
+
 def jump_next_frame(context):
     """Jump to the next frame in the timeline."""
     bpy.ops.screen.keyframe_jump(next=True)
