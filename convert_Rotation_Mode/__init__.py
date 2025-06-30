@@ -2,14 +2,17 @@
 import bpy
 from .operators import CRM_OT_convert_rotation_mode
 from .properties import CRM_Props
-from .ui import VIEW3D_PT_convert_rotation_mode, VIEW3D_PT_Rmodes_recommandations
+from .ui import (
+    VIEW3D_PT_convert_rotation_mode,
+    VIEW3D_PT_Rmodes_recommendations,
+)
 from .preferences import AddonPreferences
 
 classes = (
     CRM_Props,
     CRM_OT_convert_rotation_mode,
     VIEW3D_PT_convert_rotation_mode,
-    VIEW3D_PT_Rmodes_recommandations,
+    VIEW3D_PT_Rmodes_recommendations,
     AddonPreferences,
 )
 
