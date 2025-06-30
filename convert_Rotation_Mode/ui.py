@@ -14,7 +14,6 @@ class VIEW3D_PT_convert_rotation_mode(Panel):
         """Draw main panel"""
         layout = self.layout
 
-        obj = context.object
         scene = context.scene
         CRM_Properties = scene.CRM_Properties
 
@@ -49,7 +48,7 @@ class VIEW3D_PT_convert_rotation_mode(Panel):
         col.prop(CRM_Properties, "preserveSelection")
 
 
-class VIEW3D_PT_Rmodes_recommandations(Panel):
+class VIEW3D_PT_Rmodes_recommendations(Panel):
     bl_space_type = 'VIEW_3D'
     bl_region_type = 'UI'
     bl_category = "Animation"
@@ -57,8 +56,8 @@ class VIEW3D_PT_Rmodes_recommandations(Panel):
     bl_label = "Rotation Modes Cheat Sheet"
     bl_options = {'DEFAULT_CLOSED'}
 
-    def draw(self, context):
-        """Draw recommandations panel"""
+    def draw(self, context: Context) -> None:
+        """Draw recommendations panel"""
         layout = self.layout
 
         grid = layout.grid_flow(columns=2, align=True, even_columns=True)
@@ -94,5 +93,5 @@ class VIEW3D_PT_Rmodes_recommandations(Panel):
 
 panels = [
     VIEW3D_PT_convert_rotation_mode,
-    VIEW3D_PT_Rmodes_recommandations,
+    VIEW3D_PT_Rmodes_recommendations,
 ]
