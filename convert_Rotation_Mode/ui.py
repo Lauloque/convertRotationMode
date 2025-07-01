@@ -46,6 +46,10 @@ class VIEW3D_PT_convert_rotation_mode(Panel):
         col.prop(CRM_Properties, "jumpInitFrame")
         col.prop(CRM_Properties, "preserveLocks")
         col.prop(CRM_Properties, "preserveSelection")
+        col.prop(CRM_Properties, "bake_all_frames")
+        sub = col.column()
+        sub.enabled = CRM_Properties.bake_all_frames
+        sub.prop(CRM_Properties, "simplify_curves")
 
 
 class VIEW3D_PT_Rmodes_recommendations(Panel):
