@@ -47,11 +47,15 @@ def get_list_frames(bone: Bone) -> List[float]:
     # for armature in list_armatures:
 
     fcurves = armature.animation_data.action.fcurves
+    bone_data_path = f'pose.bones["{bone_name}"]'
 
     for curve in fcurves:
-        # skip non-rotation curves
-        if "rotation" not in curve.data_path:
-            pass
+        # filter rotation curves for current bone
+        data_path = curve.data_path
+        if "rotation" not in data_path:
+            continue
+        if bone_data_path not in data_path:
+            continue
 
         keyframe_points = curve.keyframe_points
 
