@@ -34,14 +34,26 @@ class CRM_OT_convert_rotation_mode(Operator):
         """main execution - convert rotation modes for selected bones."""
 
         target_rmode = context.scene.CRM_Properties.targetRmode
-        selected_bones = list(context.selected_pose_bones)
+        selected_bone_names = [
+            bone.name for bone in context.selected_pose_bones
+        ]
+        bone_count = len(selected_bone_names)
+
+        dprint(
+            f"Starting conversion for {bone_count} bones: "
+            f"{selected_bone_names}"
+        )
 
         store_initial_state(context)
-        init_progress(context, len(selected_bones))
+        init_progress(context, bone_count)
 
-        # Process each bone
-        for current_bone in selected_bones:
-            process_bone_conversion(context, current_bone)
+        # Process each bone by name
+        for bone_name in selected_bone_names:
+            if bone_name in context.object.pose.bones:
+                current_bone = context.object.pose.bones[bone_name]
+                process_bone_conversion(context, current_bone)
+            else:
+                dprint(f"Warning: Bone '{bone_name}' not found.")
 
         dprint(" # No more bones to work on.")
 
@@ -49,7 +61,7 @@ class CRM_OT_convert_rotation_mode(Operator):
         finish_progress(context)
         self.report(
             {"INFO"},
-            f"Successfully converted {len(selected_bones)} bone(s) to "
+            f"Successfully converted {bone_count} bone(s) to "
             f"'{target_rmode}'"
         )
 

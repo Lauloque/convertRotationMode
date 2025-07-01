@@ -3,8 +3,11 @@ from typing import List, Optional, Union
 import bpy
 from bpy.types import Context, PoseBone, Bone
 from .ui import panels
-
-_progress_counter = 0
+# from .progress_bar import (
+#     init_progress,
+#     update_progress,
+#     finish_progress,
+# )
 
 
 def dprint(message: str) -> None:
@@ -87,7 +90,7 @@ def setup_bone_for_conversion(context: Context, bone: PoseBone) -> None:
     """Make only a specified bone selected and active before conversion"""
     bpy.ops.pose.select_all(action='DESELECT')
     context.object.data.bones.active = bone.bone
-    bone.select = True
+    bone.bone.select = True
     dprint(f"### Working on bone '{bone.name}' ###")
 
 
@@ -131,6 +134,7 @@ def convert_frame_rotation(
     """Convert rotation mode for a single frame."""
     target_rmode = context.scene.CRM_Properties.targetRmode
     current_frame = context.scene.frame_current
+    bone_name = bone.name
 
     # Set to original rmode and keyframe it
     bone.rotation_mode = original_rmode
@@ -139,12 +143,12 @@ def convert_frame_rotation(
         frame=current_frame,
         group=bone.name
     )
-    dprint(f" |  |  # '{bone.name}' Rmode set to {bone.rotation_mode}")
+    dprint(f" |  |  # '{bone_name}' Rmode set to {bone.rotation_mode}")
 
     # Copy global transform
     bpy.ops.object.copy_global_transform()
     dprint(
-        f" |  |  # Copied '{bone.name}' Global Transform as {original_rmode}"
+        f" |  |  # Copied '{bone_name}' Global Transform as {original_rmode}"
     )
 
     # Set to target rmode, and keyframe it
@@ -152,51 +156,52 @@ def convert_frame_rotation(
     bone.keyframe_insert(
         "rotation_mode",
         frame=current_frame,
-        group=bone.name
+        group=bone_name
     )
     dprint(f" |  |  # Rmode set to {bone.rotation_mode}")
 
     # Paste transform
     bpy.ops.object.paste_transform(method='CURRENT', use_mirror=False)
     dprint(
-        f" |  |  # Pasted '{bone.name}' Global Transform as "
+        f" |  |  # Pasted '{bone_name}' Global Transform as "
         f"{bone.rotation_mode}"
     )
 
     # Keyframe all rotation properties
-    for path in (
+    rotation_paths = [
         "rotation_axis_angle",
         "rotation_euler",
         "rotation_mode",
         "rotation_quaternion",
-    ):
+    ]
+    for path in rotation_paths:
         bone.keyframe_insert(data_path=path)
-    dprint(f" |  |  # Keyframed '{bone.name}' rotations")
+    dprint(f" |  |  # Keyframed '{bone_name}' rotations")
 
 
 def process_bone_conversion(context: Context, bone: PoseBone) -> None:
     """Process the complete conversion for a single bone."""
     CRM_Properties = context.scene.CRM_Properties
+    scene = context.scene
+    frame_end = scene.frame_end
 
     setup_bone_for_conversion(context, bone)
     dprint(f" # Target Rmode will be {CRM_Properties.targetRmode}")
 
     locks = prepare_bone_locks(bone)
-
     original_rmode = setup_initial_keyframe(bone)
 
     # Process each frame
-    while context.scene.frame_current <= context.scene.frame_end:
-        current_frame = context.scene.frame_current
+    while scene.frame_current <= frame_end:
+        current_frame = scene.frame_current
         dprint(f" |  # Jumped to frame {current_frame}")
 
         update_progress(context)
 
-        # Convert rotation for this frame
         convert_frame_rotation(context, bone, original_rmode)
 
-        # Move to next frame
         jump_next_frame(context)
+
         if current_frame == context.scene.frame_current:
             break
 
@@ -212,22 +217,43 @@ def init_progress(context: Context, total_bones: int) -> None:
     """Initialize the progress tracking."""
     global _progress_counter
     scene = context.scene
+
+    # Calculate total frames
     total_frames = scene.frame_end - scene.frame_start + 1
     progress_max = total_bones * total_frames
+
+    # Safety checks
+    if progress_max <= 0:
+        dprint(
+            f"Warning: Invalid progress_max ({progress_max}). Using fallback."
+        )
+        progress_max = total_bones  # Fallback to just bone count
+
     _progress_counter = 0
-    context.window_manager.progress_begin(0, progress_max)
+
+    try:
+        context.window_manager.progress_begin(0, progress_max)
+    except Exception as e:
+        dprint(f"Failed to initialize progress bar: {e}")
 
 
 def update_progress(context: Context) -> None:
     """Update the progress counter and progress bar"""
     global _progress_counter
     _progress_counter += 1
-    context.window_manager.progress_update(_progress_counter)
+    try:
+        context.window_manager.progress_update(_progress_counter)
+    except Exception as e:
+        dprint(f"Failed to update progress: {e}")
 
 
 def finish_progress(context: Context) -> None:
     """Finish the progress tracking."""
-    context.window_manager.progress_end()
+    try:
+        context.window_manager.progress_end()
+        dprint("Progress bar finished successfully")
+    except Exception as e:
+        dprint(f"Failed to finish progress bar: {e}")
 
 
 def store_initial_state(context: Context) -> None:
@@ -235,15 +261,17 @@ def store_initial_state(context: Context) -> None:
     scene = context.scene
     selection = list(context.selected_pose_bones)
     scene["crm_initial_frame"] = scene.frame_current
-    scene["crm_initial_selection"] = selection
 
-    # Store the active pose bone, not the active bone
+    # Store bone names instead of bone objects
+    scene["crm_initial_selection"] = [bone.name for bone in selection]
+
+    # Store the active pose bone name, not the bone object
     if context.active_pose_bone:
-        scene["crm_initial_active"] = context.active_pose_bone
+        scene["crm_initial_active"] = context.active_pose_bone.name
     elif selection:
-        scene["crm_initial_active"] = selection[0]
+        scene["crm_initial_active"] = selection[0].name
     else:
-        scene["crm_initial_active"] = None
+        scene["crm_initial_active"] = ""
 
 
 def restore_initial_state(context: Context) -> None:
@@ -256,22 +284,28 @@ def restore_initial_state(context: Context) -> None:
         context.scene.frame_current = initial_frame
 
     if CRM_Properties.preserveSelection:
-        # Restore selection from stored data
-        selected_bones = scene.get('crm_initial_selection', [])
-        initial_active_bone = scene.get('crm_initial_active', None)
+        # Restore selection from stored bone names
+        selected_bone_names = scene.get('crm_initial_selection', [])
+        initial_active_bone_name = scene.get('crm_initial_active', "")
+        pose_bones = context.object.pose.bones
+        data_bones = context.object.data.bones
 
         bpy.ops.pose.select_all(action='DESELECT')
-        for bone in selected_bones:
-            bone.select = True
 
-        # Set active bone - handle both PoseBone and Bone objects
-        if initial_active_bone:
-            if hasattr(initial_active_bone, 'bone'):
-                # It's a PoseBone, get the underlying Bone
-                context.object.data.bones.active = initial_active_bone.bone
-            else:
-                # It's already a Bone
-                context.object.data.bones.active = initial_active_bone
+        # Select bones by name - use bone.bone.select for Blender 4.0+
+        # Ensure we're working with strings
+        if isinstance(selected_bone_names, (list, tuple)):
+            for bone_name in selected_bone_names:
+                bone_name_str = str(bone_name)
+                dprint(f"Trying to select bone: '{bone_name_str}'")
+                if bone_name_str in pose_bones:
+                    pose_bones[bone_name_str].bone.select = True
+
+        # Set active bone by name
+        if initial_active_bone_name:
+            active_bone_name_str = str(initial_active_bone_name)
+            if active_bone_name_str and active_bone_name_str in data_bones:
+                data_bones.active = data_bones[active_bone_name_str]
 
     # Clean up stored data
     scene.pop("crm_initial_frame", None)
