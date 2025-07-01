@@ -47,7 +47,7 @@ def get_list_frames(bone: Bone) -> List[float]:
     # for armature in list_armatures:
 
     fcurves = armature.animation_data.action.fcurves
-    bone_data_path = f'pose.bones["{bone_name}"]'
+    bone_data_path = f'pose.bones["{bone.name}"]'
 
     for curve in fcurves:
         # filter rotation curves for current bone
