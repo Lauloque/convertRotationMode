@@ -17,6 +17,18 @@ def dprint(message: str) -> None:
         print(f"[Convert Rot Mode]: {message}")
 
 
+def bake_all_frames(bone: PoseBone) -> None:
+    """Bakes all frames of a bone"""
+    scene = bpy.context.scene
+    rotation_paths = ["rotation_mode"]
+
+    # get first and last frame of anim fcurves and rotation paths list
+    
+    
+    for path in rotation_paths:
+        bone.keyframe_insert(data_path=path)
+
+
 def get_list_frames(bone: Bone) -> List[float]:
     """
     Returns the list of frames with rotation keyframes on the selected bones
@@ -222,6 +234,8 @@ def process_bone_conversion(context: Context, bone: PoseBone) -> None:
     dprint(f" # Target Rmode will be {CRM_Properties.targetRmode}")
 
     locks = prepare_bone_locks(bone)
+    if CRM_Properties.bake_all_frames:
+        bake_all_frames(current_bone)
     list_frames = get_list_frames(bone)
     original_rmode = setup_initial_keyframe(bone, list_frames[0])
 
