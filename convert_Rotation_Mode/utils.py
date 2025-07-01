@@ -213,36 +213,62 @@ def convert_frame_rotation(
     current_frame = context.scene.frame_current
     bone_name = bone.name
 
-    # Set to original rmode and keyframe it
-    bone.rotation_mode = original_rmode
-    bone.keyframe_insert(
-        "rotation_mode",
-        frame=current_frame,
-        group=bone.name
-    )
-    dprint(f" |  |  # '{bone_name}' Rmode set to {bone.rotation_mode}")
+    # Current implementation uses the addon Copy Global Transform to copy and
+    # paste the worldspace pose. But because it frequently throws that error:
+    # `Clipboard does not contain a valid matrix`
+    # And due to it happening with no consistantly reproductivity:
+    # Current implementation repeats the procedure up to three times, which
+    # seemsto make to work most of the time. It's obviously a massive
+    # performance hit at large scale, but hopefully this will not be necessary
+    # once the addon is updated to not need that 3rd party addon anymore.
 
-    # Copy global transform
-    bpy.ops.object.copy_global_transform()
-    dprint(
-        f" |  |  # Copied '{bone_name}' Global Transform as {original_rmode}"
-    )
+    retries = 0
+    max_retries = 3
+    success = False
 
-    # Set to target rmode, and keyframe it
-    bone.rotation_mode = target_rmode
-    bone.keyframe_insert(
-        "rotation_mode",
-        frame=current_frame,
-        group=bone_name
-    )
-    dprint(f" |  |  # Rmode set to {bone.rotation_mode}")
+    while not success and retries < max_retries:
+        try:
+            # Set to original rmode and keyframe it
+            bone.rotation_mode = original_rmode
+            bone.keyframe_insert(
+                "rotation_mode",
+                frame=current_frame,
+                group=bone.name
+            )
+            dprint(f" |  |  # '{bone_name}' Rmode set to {bone.rotation_mode}")
 
-    # Paste transform
-    bpy.ops.object.paste_transform(method='CURRENT', use_mirror=False)
-    dprint(
-        f" |  |  # Pasted '{bone_name}' Global Transform as "
-        f"{bone.rotation_mode}"
-    )
+            # Copy global transform
+            bpy.ops.object.copy_global_transform()
+            dprint(
+                f" |  |  # Copied '{bone_name}' Global Transform as {original_rmode}"
+            )
+
+            # Set to target rmode, and keyframe it
+            bone.rotation_mode = target_rmode
+            bone.keyframe_insert(
+                "rotation_mode",
+                frame=current_frame,
+                group=bone_name
+            )
+            dprint(f" |  |  # Rmode set to {bone.rotation_mode}")
+
+            # Paste transform
+            bpy.ops.object.paste_transform(method='CURRENT', use_mirror=False)
+            dprint(
+                f" |  |  # Pasted '{bone_name}' Global Transform as "
+                f"{bone.rotation_mode}"
+            )
+
+            success = True
+        except RuntimeError as e:
+            retries +=1
+            dprint(f" |  |  # Attempt {retries}:")
+            dprint(f" |  |  # {e}")
+
+    if not success:
+        raise RuntimeError(
+            "Copy Global Transform failed too many times, aborting."
+        )
 
     # Keyframe all rotation properties
     rotation_paths = [
