@@ -43,13 +43,14 @@ class VIEW3D_PT_convert_rotation_mode(Panel):
 
         col = layout.column(align=True)
         col.operator("crm.convert_rotation_mode", text="Convert!")
-        col.prop(CRM_Properties, "jumpInitFrame")
-        col.prop(CRM_Properties, "preserveLocks")
-        col.prop(CRM_Properties, "preserveSelection")
         col.prop(CRM_Properties, "bake_all_frames")
+        col.label(text="After conversion:")
         sub = col.column()
         sub.enabled = CRM_Properties.bake_all_frames
         sub.prop(CRM_Properties, "simplify_curves")
+        col.prop(CRM_Properties, "jumpInitFrame")
+        col.prop(CRM_Properties, "preserveLocks")
+        col.prop(CRM_Properties, "preserveSelection")
 
 
 class VIEW3D_PT_Rmodes_recommendations(Panel):
