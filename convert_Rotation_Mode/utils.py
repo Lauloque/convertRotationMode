@@ -17,16 +17,44 @@ def dprint(message: str) -> None:
         print(f"[Convert Rot Mode]: {message}")
 
 
-def bake_all_frames(bone: PoseBone) -> None:
+def bake_all_frames(bone: PoseBone) -> List[int]:
     """Bakes all frames of a bone"""
+    obj = bone.id_data
     scene = bpy.context.scene
-    rotation_paths = ["rotation_mode"]
 
-    # get first and last frame of anim fcurves and rotation paths list
-    
-    
-    for path in rotation_paths:
-        bone.keyframe_insert(data_path=path)
+    bone_path_prefix = f'pose.bones["{bone.name}"]'
+    frame_starts = []
+    frame_ends = []
+
+    # Collect min and max frame from bone's fcurves
+    for curve in obj.animation_data.action.fcurves:
+        if curve.data_path.startswith(bone_path_prefix):
+            curve_range = curve.range()
+            if curve_range:
+                frame_starts.append(curve_range[0])
+                frame_ends.append(curve_range[1])
+
+    first_frame = int(min(frame_starts))
+    last_frame = int(max(frame_ends))
+
+    dprint(
+        f" |  # Backing all frames from frames {first_frame} to {last_frame}"
+    )
+
+    list_frames = list(range(first_frame, last_frame + 1))
+
+    # Bake (insert keyframes) on all frames in the range
+    for frame in list_frames:
+        scene.frame_set(frame)
+        # Insert keyframes for the rotation mode currently used
+        if bone.rotation_mode == 'QUATERNION':
+            bone.keyframe_insert(data_path="rotation_quaternion")
+        elif bone.rotation_mode == 'AXIS_ANGLE':
+            bone.keyframe_insert(data_path="rotation_axis_angle")
+        else:
+            bone.keyframe_insert(data_path="rotation_euler")
+
+    return list_frames
 
 
 def get_list_frames(bone: Bone) -> List[float]:
@@ -239,8 +267,9 @@ def process_bone_conversion(context: Context, bone: PoseBone) -> None:
 
     locks = prepare_bone_locks(bone)
     if CRM_Properties.bake_all_frames:
-        bake_all_frames(current_bone)
-    list_frames = get_list_frames(bone)
+        list_frames = bake_all_frames(bone)
+    else:
+        list_frames = get_list_frames(bone)
     original_rmode = setup_initial_keyframe(bone, list_frames[0])
 
     # Process each frame in the frames list
