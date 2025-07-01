@@ -17,13 +17,44 @@ def dprint(message: str) -> None:
         print(f"[Convert Rot Mode]: {message}")
 
 
-def get_fcurves(obj):
-    """Retrieve the F-Curves of an object."""
-    # Possibly obsolete
-    try:
-        return obj.animation_data.action.fcurves
-    except AttributeError:
-        return None
+def get_list_frames(bone: Bone) -> List[float]:
+    """
+    Returns the list of frames with rotation keyframes on the selected bones
+    """
+    # context = bpy.context
+    list_frames: List[float] = []
+
+    armature = bone.id_data
+    # ----FOR FUTURE MULTIBONE SUPPORT----
+    # list_armatures = []
+    # selected_pose_bones = context.selected_pose_bones
+    # for bone in selected_pose_bones:
+    #     armature = bone.id_data
+    #     if armature not in list_armatures:
+    #         list_armatures.append(armature)
+    # for armature in list_armatures:
+
+    fcurves = armature.animation_data.action.fcurves
+
+    for curve in fcurves:
+        # skip non-rotation curves
+        if "rotation" not in curve.data_path:
+            pass
+
+        keyframe_points = curve.keyframe_points
+
+        for keyframe in keyframe_points:
+            frame = keyframe.co[0]
+            if frame not in list_frames:
+                list_frames.append(frame)
+
+    return sorted(list_frames)
+
+
+def deselect_all_bones() -> None:
+    """Deselect all bones"""
+    for bone in bpy.context.selected_pose_bones:
+        bone.bone.select = False
 
 
 def get_rotation_locks(bone: PoseBone) -> List[bool]:
@@ -88,7 +119,7 @@ def update_panel(self, context: Context) -> None:
 
 def setup_bone_for_conversion(context: Context, bone: PoseBone) -> None:
     """Make only a specified bone selected and active before conversion"""
-    bpy.ops.pose.select_all(action='DESELECT')
+    deselect_all_bones()
     context.object.data.bones.active = bone.bone
     bone.bone.select = True
     dprint(f"### Working on bone '{bone.name}' ###")
@@ -109,18 +140,20 @@ def prepare_bone_locks(bone: PoseBone) -> Optional[List[bool]]:
         return None
 
 
-def setup_initial_keyframe(bone: PoseBone) -> str:
+def setup_initial_keyframe(bone: PoseBone, first_frame: float) -> str:
     """
     Jump at the start frame and place a keyframe to make sure no unwanted
     changes in animation happen from there to the next keyframe.
     Returns the original rotation mode.
     """
     original_rmode = bone.rotation_mode
-    bpy.ops.screen.frame_jump(end=False)
+    scene = bpy.context.scene
+    scene.frame_set(int(first_frame))
+    # bpy.ops.screen.frame_jump(end=False)
     bone.rotation_mode = original_rmode
     bone.keyframe_insert(
         "rotation_mode",
-        frame=1,
+        frame=int(first_frame),
         group=bone.name
     )
     return original_rmode
@@ -183,27 +216,29 @@ def process_bone_conversion(context: Context, bone: PoseBone) -> None:
     """Process the complete conversion for a single bone."""
     CRM_Properties = context.scene.CRM_Properties
     scene = context.scene
-    frame_end = scene.frame_end
+    # frame_end = scene.frame_end
 
     setup_bone_for_conversion(context, bone)
     dprint(f" # Target Rmode will be {CRM_Properties.targetRmode}")
 
     locks = prepare_bone_locks(bone)
-    original_rmode = setup_initial_keyframe(bone)
+    list_frames = get_list_frames(bone)
+    original_rmode = setup_initial_keyframe(bone, list_frames[0])
 
-    # Process each frame
-    while scene.frame_current <= frame_end:
-        current_frame = scene.frame_current
-        dprint(f" |  # Jumped to frame {current_frame}")
+    # Process each frame in the frames list
+    for frame in list_frames:
+        scene.frame_set(int(frame))
+        dprint(f" |  # Jumped to frame {frame}")
 
         update_progress(context)
 
         convert_frame_rotation(context, bone, original_rmode)
 
-        jump_next_frame(context)
+        # CLEANUP
+        # jump_next_frame(context)
 
-        if current_frame == context.scene.frame_current:
-            break
+        # if current_frame == context.scene.frame_current:
+        #     break
 
     # Restore locks if needed
     if CRM_Properties.preserveLocks:
@@ -290,7 +325,7 @@ def restore_initial_state(context: Context) -> None:
         pose_bones = context.object.pose.bones
         data_bones = context.object.data.bones
 
-        bpy.ops.pose.select_all(action='DESELECT')
+        deselect_all_bones()
 
         # Select bones by name - use bone.bone.select for Blender 4.0+
         # Ensure we're working with strings
