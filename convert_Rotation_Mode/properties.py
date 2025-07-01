@@ -38,3 +38,20 @@ class CRM_Props(PropertyGroup):
         description="Preserves selection.",
         default=True
     )
+
+    bake_all_frames: BoolProperty(
+        name="Bake all frames",
+        description="Bakes and converts every frame instead of only keyframes "
+                    "to prevent unexpected rotation changes between them, at "
+                    "the cost of slower conversion and dense, harder-to-edit "
+                    "animation curves.",
+        default=False
+    )
+
+    simplify_curves: BoolProperty(
+        name="Simplify Curves",
+        description="Makes curves easier to edit after conversion by "
+                    "simplifying them, which may slightly alter the original "
+                    "unbaked rotation.",
+        default=False
+    )
