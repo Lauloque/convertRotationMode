@@ -1,6 +1,6 @@
 # Convert Rotation Mode
 
-[![GitHub license](https://img.shields.io/github/license/L0Lock/convertRotationMode?style=for-the-badge&labelColor=rgb(64,64,64)](https://github.com/L0Lock/convertRotationMode/blob/master/LICENSE) ![Minimum Supported Blender Version](https://img.shields.io/badge/Blender-4.2LTS+-green?style=for-the-badge&logo=blender&logoColor=white&labelColor=rgb(64,64,64)) [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/H2H818FHX)
+[![GitHub license](https://img.shields.io/github/license/L0Lock/convertRotationMode?style=for-the-badge&labelColor=rgb(64,64,64))](https://github.com/L0Lock/convertRotationMode/blob/master/LICENSE) ![Minimum Supported Blender Version](https://img.shields.io/badge/Blender-4.2LTS+-green?style=for-the-badge&logo=blender&logoColor=white&labelColor=rgb(64,64,64)) [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/H2H818FHX)
 
 -----
 
