@@ -3,6 +3,7 @@ from typing import List, Optional, Union
 import bpy
 from bpy.types import Context, PoseBone, Bone
 from .ui import panels
+from .bl_logger import logger
 # from .progress_bar import (
 #     init_progress,
 #     update_progress,
@@ -114,7 +115,7 @@ def update_panel(self, context: Context) -> None:
 
     except Exception as e:
         message = "Updating Panel locations has failed"
-        dprint("\n[{}]\n{}\n\nError:\n{}".format(__package__, message, e))
+        logger.error("\n[{}]\n{}\n\nError:\n{}".format(__package__, message, e))
 
 
 def setup_bone_for_conversion(context: Context, bone: PoseBone) -> None:
@@ -122,7 +123,7 @@ def setup_bone_for_conversion(context: Context, bone: PoseBone) -> None:
     deselect_all_bones()
     context.object.data.bones.active = bone.bone
     bone.bone.select = True
-    dprint(f"### Working on bone '{bone.name}' ###")
+    logger.debug(f"### Working on bone '{bone.name}' ###")
 
 
 def prepare_bone_locks(bone: PoseBone) -> Optional[List[bool]]:
@@ -245,7 +246,7 @@ def process_bone_conversion(context: Context, bone: PoseBone) -> None:
         toggle_rotation_locks(bone, 'ON', locks)
         dprint(" |  # Reverted rotation locks")
 
-    dprint(f" # No more keyframes on '{bone.name}'.#")
+    logger.debug(f" # No more keyframes on '{bone.name}'.#")
 
 
 def init_progress(context: Context, total_bones: int) -> None:

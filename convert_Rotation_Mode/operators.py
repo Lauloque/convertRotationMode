@@ -11,6 +11,7 @@ from .utils import (
     init_progress,
     finish_progress,
 )
+from .bl_logger import logger
 
 
 class CRM_OT_convert_rotation_mode(Operator):
@@ -55,7 +56,7 @@ class CRM_OT_convert_rotation_mode(Operator):
             else:
                 dprint(f"Warning: Bone '{bone_name}' not found.")
 
-        dprint(" # No more bones to work on.")
+        logger.info(" # No more bones to work on.")
 
         # Progress cleanup
         finish_progress(context)
