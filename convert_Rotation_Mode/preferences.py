@@ -1,5 +1,6 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 import bpy
+import platform
 from bpy.types import AddonPreferences
 from bpy.props import BoolProperty, StringProperty
 from .ui import update_panel
@@ -31,9 +32,10 @@ class AddonPreferences(AddonPreferences):
         layout = self.layout
         layout.use_property_split = True
         layout.prop(self, "category", text="Tab Name")
-        row = layout.row()
-        row.prop(self, "developer_print")
-        row.operator("wm.console_toggle", icon="CONSOLE", text="")
+        if "Windows" in platform.system():
+            row = layout.row()
+            row.prop(self, "developer_print")
+            row.operator("wm.console_toggle", icon="CONSOLE", text="")
 
         if context.preferences.addons.find("copy_global_transform") == -1:
             row = layout.row(align=False)
