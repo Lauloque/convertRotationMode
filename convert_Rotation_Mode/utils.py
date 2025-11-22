@@ -2,7 +2,6 @@
 from typing import List, Optional, Union
 import bpy
 from bpy.types import Context, PoseBone, Bone
-from .ui import panels
 from .bl_logger import logger
 # from .progress_bar import (
 #     init_progress,
@@ -327,3 +326,21 @@ def restore_initial_state(context: Context) -> None:
     scene.pop("crm_initial_frame", None)
     scene.pop("crm_initial_active", None)
     scene.pop("crm_initial_selection", None)
+
+
+def is_any_pose_bone_selected() -> bool:
+    """
+    Checks if any pose bone is selected in the armature data instead of looking
+    in the viewport context, which is otherwise prone to issues if objects are 
+    hidden in the viewport even if I do have them visible and selected in 
+    another viewport
+
+    Returns:
+        Bool: Whether a bone is selected.
+    """
+
+    for obj in bpy.context.selected_objects:
+        if obj.type == 'ARMATURE' and obj.mode == 'POSE':
+            if obj.pose and any(bone.bone.select for bone in obj.pose.bones):
+                return True
+    return False

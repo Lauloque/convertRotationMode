@@ -2,6 +2,8 @@
 import bpy
 from bpy.types import Panel
 from bpy.types import Context
+from .utils import is_any_pose_bone_selected
+from .bl_logger import logger
 
 
 class VIEW3D_PT_convert_rotation_mode(Panel):
@@ -37,7 +39,7 @@ class VIEW3D_PT_convert_rotation_mode(Panel):
             row = col.row(align=False)
             row.alignment = 'CENTER'
             row.label(text="---")
-        if not bpy.context.selected_pose_bones:
+        if not is_any_pose_bone_selected():
             col = layout.column(align=True)
             col.label(text="Please select a bone!", icon="ERROR")
 

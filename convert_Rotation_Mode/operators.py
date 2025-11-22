@@ -10,6 +10,7 @@ from .utils import (
     restore_initial_state,
     init_progress,
     finish_progress,
+    is_any_pose_bone_selected,
 )
 from .bl_logger import logger
 
@@ -27,7 +28,7 @@ class CRM_OT_convert_rotation_mode(Operator):
         addons = context.preferences.addons
         has_cgt_addon = addons.find("copy_global_transform") != -1
         is_pose_mode = context.mode == 'POSE'
-        has_selected_bones = len(context.selected_pose_bones) > 0
+        has_selected_bones = is_any_pose_bone_selected()
 
         return has_cgt_addon and is_pose_mode and has_selected_bones
 
