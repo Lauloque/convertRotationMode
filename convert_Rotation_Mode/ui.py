@@ -95,3 +95,25 @@ panels = [
     VIEW3D_PT_convert_rotation_mode,
     VIEW3D_PT_Rmodes_recommendations,
 ]
+
+
+def update_panel(self, context: Context) -> None:
+    """Update tab in which to place the panel"""
+    try:
+        # Ensure 'panels' is defined or imported
+        # from .ui import panels  # Import panels from the appropriate module
+
+        for panel in panels:
+            if "bl_rna" in panel.__dict__:
+                bpy.utils.unregister_class(panel)
+
+        for panel in panels:
+            addon = context.preferences.addons[__package__]
+            panel.bl_category = addon.preferences.category
+            bpy.utils.register_class(panel)
+
+    except Exception as e:
+        message = "Updating Panel locations has failed"
+        logger.error(
+            "\n[{}]\n{}\n\nError:\n{}".format(__package__, message, e)
+        )

@@ -2,7 +2,7 @@
 import bpy
 from bpy.types import AddonPreferences
 from bpy.props import BoolProperty, StringProperty
-from .utils import update_panel
+from .ui import update_panel
 
 
 class AddonPreferences(AddonPreferences):
