@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
 """
 Colored Logger for Blender Scripts and Extensions
 
