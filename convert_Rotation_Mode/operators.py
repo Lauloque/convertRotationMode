@@ -24,13 +24,11 @@ class CRM_OT_convert_rotation_mode(Operator):
 
     @classmethod
     def poll(cls, context: Context) -> bool:
-        """Filter for pose mode, selected bones, and CGT addon enabled"""
-        addons = context.preferences.addons
-        has_cgt_addon = addons.find("copy_global_transform") != -1
+        """Filter for pose mode, selected bones"""
         is_pose_mode = context.mode == 'POSE'
         has_selected_bones = is_any_pose_bone_selected()
 
-        return has_cgt_addon and is_pose_mode and has_selected_bones
+        return is_pose_mode and has_selected_bones
 
     def execute(self, context: Context) -> Set[str]:
         """main execution - convert rotation modes for selected bones."""

@@ -10,10 +10,6 @@
 
 ## Installation
 
-> [!CAUTION]
-> **Requires [Copy Global Transform addon](https://wiki.blender.org/wiki/Reference/Release_Notes/3.1/Add-ons#Copy_Global_Transform), shipped with Blender since v3.1.0. and up**
-> There's a handy button in the addon's preference to enable it if needed.
-
 ### Simple method:
 
 - Go to Edit > Preferences > Get Extensions
@@ -29,8 +25,6 @@
 - Hit the 🔽 button > Install from Disk
 
 - Browse the zip file you downloaded.
-
-![demo enable dependency](./Prez/demo_enable_dependency.gif)
 
 ## Usage:
 

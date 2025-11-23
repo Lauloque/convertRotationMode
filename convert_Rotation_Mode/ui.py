@@ -23,22 +23,6 @@ class VIEW3D_PT_convert_rotation_mode(Panel):
         col.label(text="Target Rotation Mode")
         col.prop(CRM_Properties, "targetRmode", text="")
 
-        if context.preferences.addons.find("copy_global_transform") == -1:
-            row = col.row(align=False)
-            row.alignment = 'CENTER'
-            row.label(text="Required:", icon="ERROR")
-            row = col.row(align=False)
-            row.alignment = 'CENTER'
-            row.label(text="'Copy Global Transform'")
-            row = col.row(align=False)
-            row.alignment = 'CENTER'
-            row.operator(
-                "preferences.addon_enable",
-                text="Enable"
-            ).module="copy_global_transform"
-            row = col.row(align=False)
-            row.alignment = 'CENTER'
-            row.label(text="---")
         if not is_any_pose_bone_selected():
             col = layout.column(align=True)
             col.label(text="Please select a bone!", icon="ERROR")

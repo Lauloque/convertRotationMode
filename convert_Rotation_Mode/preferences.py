@@ -36,15 +36,3 @@ class AddonPreferences(AddonPreferences):
             row = layout.row()
             row.prop(self, "developer_print")
             row.operator("wm.console_toggle", icon="CONSOLE", text="")
-
-        if context.preferences.addons.find("copy_global_transform") == -1:
-            row = layout.row(align=False)
-            row.alignment = 'CENTER'
-            row.label(
-                text="This addon requires the addon "
-                "'Copy Global Transform' by Sybren A. Stüvel.",
-                icon="ERROR"
-            )
-            row = layout.row(align=False)
-            row.alignment = 'CENTER'
-            row.operator("preferences.addon_enable").module="copy_global_transform"
