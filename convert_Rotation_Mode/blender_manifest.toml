@@ -1,6 +1,6 @@
 schema_version = "1.0.0"
 id = "convert_rotation_mode"
-version = "1.4.8"
+version = "1.5.0"
 name = "Convert Rotation Mode"
 tagline = "Change rotation mode whilst preserving animation"
 maintainer = "Loïc \"Lauloque\" Dautry"
@@ -11,7 +11,7 @@ website = "https://github.com/Lauloque/convertRotationMode"
 # https://docs.blender.org/manual/en/dev/advanced/extensions/tags.html
 tags = ["Animation", "3D View", "Bake"]
 
-blender_version_min = "4.2.0"
+blender_version_min = "5.0.0"
 # blender_version_max = "5.1.0"
 
 # License conforming to https://spdx.org/licenses/ (use "SPDX: prefix)
@@ -45,10 +45,10 @@ license = ["SPDX:GPL-3.0-or-later",]
 # If using network permissions, ensure you also check `bpy.app.online_access` in your addon.
 # https://docs.blender.org/manual/en/dev/advanced/extensions/addons.html#internet-access
 
-# [permissions]
+[permissions]
 # network = "Sync motion-capture data to server"
 # files = "Import/export FBX files"
-# clipboard = "Copy and paste bone transforms"
+clipboard = "Copy and paste bone transforms"
 
 # Optional: Build settings
 # If you're distributing your addon and need to exclude certain files or directories,
