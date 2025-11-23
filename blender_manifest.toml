@@ -54,9 +54,21 @@ clipboard = "Copy and paste bone transforms"
 # If you're distributing your addon and need to exclude certain files or directories,
 # specify the paths to exclude here.
 # For example:
-# [build]
-# paths_exclude_pattern = [
-#   "__pycache__/",
-#   "/.git/",
-#   "/*.zip",
-# ]
+[build]
+paths_exclude_pattern = [
+  "/__pycache__/",
+  "/.git/",
+  "/.github/",
+  "/.pytype/",
+  "/.vscode/",
+  "*.zip",
+  "/Prez/",
+  "/Releases/",
+  "/venv*/",
+  "/Building_Solutions/",
+  ".git*",
+  "*.sublime*",
+  "*.blend*",
+  "*.pyc",
+  "*.txt",
+]
