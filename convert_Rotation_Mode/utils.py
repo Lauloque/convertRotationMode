@@ -58,7 +58,7 @@ def get_list_frames(bone: Bone) -> List[float]:
 def deselect_all_bones() -> None:
     """Deselect all bones"""
     for bone in bpy.context.selected_pose_bones:
-        bone.bone.select = False
+        bone.select = False
 
 
 def get_rotation_locks(bone: PoseBone) -> List[bool]:
@@ -156,17 +156,12 @@ def convert_frame_rotation(
 
     # Set to original rmode and keyframe it
     bone.rotation_mode = original_rmode
-    bone.keyframe_insert(
-        "rotation_mode",
-        frame=current_frame,
-        group=bone.name
-    )
     dprint(f" |  |  # '{bone_name}' Rmode set to {bone.rotation_mode}")
 
-    # Copy global transform
-    bpy.ops.object.copy_global_transform()
+    # Store current rotation matrix
+    rot_matrix = bone.matrix_basis.to_3x3()
     dprint(
-        f" |  |  # Copied '{bone_name}' Global Transform as {original_rmode}"
+        f" |  |  # Stored '{bone_name}' rotation matrix as {original_rmode}"
     )
 
     # Set to target rmode, and keyframe it
@@ -178,12 +173,14 @@ def convert_frame_rotation(
     )
     dprint(f" |  |  # Rmode set to {bone.rotation_mode}")
 
-    # Paste transform
-    bpy.ops.object.paste_transform(method='CURRENT', use_mirror=False)
-    dprint(
-        f" |  |  # Pasted '{bone_name}' Global Transform as "
-        f"{bone.rotation_mode}"
-    )
+    # Convert and apply the rotation to the new mode
+    if target_rmode == 'QUATERNION':
+        bone.rotation_quaternion = rot_matrix.to_quaternion()
+    elif target_rmode == 'AXIS_ANGLE':
+        quat = rot_matrix.to_quaternion()
+        bone.rotation_axis_angle = quat.to_axis_angle()
+    else:  # Euler modes (XYZ, XZY, YXZ, YZX, ZXY, ZYX)
+        bone.rotation_euler = rot_matrix.to_euler(target_rmode)
 
     # Keyframe all rotation properties
     rotation_paths = [
@@ -346,6 +343,6 @@ def is_any_pose_bone_selected() -> bool:
 
     for obj in bpy.context.selected_objects:
         if obj.type == 'ARMATURE' and obj.mode == 'POSE':
-            if obj.pose and any(bone.bone.select for bone in obj.pose.bones):
+            if obj.pose and any(bone.select for bone in obj.pose.bones):
                 return True
     return False
