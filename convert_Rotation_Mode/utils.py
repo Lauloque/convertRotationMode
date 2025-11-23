@@ -1,6 +1,7 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 from typing import List, Optional, Union
 import bpy
+from bpy_extras import anim_utils
 from bpy.types import Context, PoseBone, Bone
 from .bl_logger import logger
 # from .progress_bar import (
@@ -34,7 +35,10 @@ def get_list_frames(bone: Bone) -> List[float]:
     #         list_armatures.append(armature)
     # for armature in list_armatures:
 
-    fcurves = armature.animation_data.action.fcurves
+    ad = armature.animation_data
+    slot = ad.action_slot
+    bag = anim_utils.action_ensure_channelbag_for_slot(ad.action, slot)
+    fcurves = bag.fcurves
 
     for curve in fcurves:
         # skip non-rotation curves
@@ -100,8 +104,9 @@ def toggle_rotation_locks(
 def setup_bone_for_conversion(context: Context, bone: PoseBone) -> None:
     """Make only a specified bone selected and active before conversion"""
     deselect_all_bones()
+    # Use bone.bone to avoid ArmatureBones.active expects a Bone, not PoseBone
     context.object.data.bones.active = bone.bone
-    bone.bone.select = True
+    bone.select = True
     logger.debug(f"### Working on bone '{bone.name}' ###")
 
 
@@ -307,14 +312,14 @@ def restore_initial_state(context: Context) -> None:
 
         deselect_all_bones()
 
-        # Select bones by name - use bone.bone.select for Blender 4.0+
+        # Select bones by name
         # Ensure we're working with strings
         if isinstance(selected_bone_names, (list, tuple)):
             for bone_name in selected_bone_names:
                 bone_name_str = str(bone_name)
                 dprint(f"Trying to select bone: '{bone_name_str}'")
                 if bone_name_str in pose_bones:
-                    pose_bones[bone_name_str].bone.select = True
+                    pose_bones[bone_name_str].select = True
 
         # Set active bone by name
         if initial_active_bone_name:
