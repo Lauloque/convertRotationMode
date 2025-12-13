@@ -178,7 +178,9 @@ def convert_frame_rotation(
         bone.rotation_quaternion = rot_matrix.to_quaternion()
     elif target_rmode == 'AXIS_ANGLE':
         quat = rot_matrix.to_quaternion()
-        bone.rotation_axis_angle = quat.to_axis_angle()
+        axis, angle = quat.to_axis_angle()
+        # bone.rotation_axis_angle expects [angle, axis_x, axis_y, axis_z]
+        bone.rotation_axis_angle = [angle, axis.x, axis.y, axis.z]
     else:  # Euler modes (XYZ, XZY, YXZ, YZX, ZXY, ZYX)
         bone.rotation_euler = rot_matrix.to_euler(target_rmode)
 
