@@ -10,7 +10,7 @@ def register():
     # e.g. properties or operators that make sense to run from CLI
     # add your Always-zone registration here
 
-    global __classes
+    global _classes
 
     # --- GUI-mode-only register zone ---
     if not bpy.app.background:
