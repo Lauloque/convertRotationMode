@@ -156,9 +156,13 @@ def convert_frame_rotation(
 
     logger.debug(f" # Frame {current_frame}")
 
-    # Set to original rmode and keyframe it
+    # Set to original rmode, keyframe it, then refresh values by setting current frame
+    # Must refresh AFTER keyframing, otherwise the it just ignores the rotation mode change after first keyframe
+    # Tried with context.view_layer.update() but it didn't work
     bone.rotation_mode = original_rmode
-    dprint(f" |  |  # '{bone_name}' Rmode set to {bone.rotation_mode}")
+    bone.keyframe_insert("rotation_mode", frame=current_frame, group=bone_name)
+    context.scene.frame_set(current_frame)
+    logger.debug(f" |  # '{bone_name}' Rmode set to {bone.rotation_mode}")
 
     # Store current rotation matrix
     rot_matrix = bone.matrix_basis.to_3x3()
@@ -168,11 +172,7 @@ def convert_frame_rotation(
 
     # Set to target rmode, and keyframe it
     bone.rotation_mode = target_rmode
-    bone.keyframe_insert(
-        "rotation_mode",
-        frame=current_frame,
-        group=bone_name
-    )
+    bone.keyframe_insert("rotation_mode", frame=current_frame, group=bone_name)
     dprint(f" |  |  # Rmode set to {bone.rotation_mode}")
 
     # Convert and apply the rotation to the new mode and keyframe rotations
