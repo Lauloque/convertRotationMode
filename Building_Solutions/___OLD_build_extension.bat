@@ -1,0 +1,2 @@
+"C:\AppInstall\Blender\stable\blender-4.2.0-stable.a51f293548ad\blender.exe" --factory-startup --command extension build --source-dir "C:\Users\Lauloque\Documents\Repositories\convertRotationMode\convert_Rotation_Mode" --output-filepath "C:\Users\Lauloque\Documents\Repositories\convertRotationMode\Releases\extension__convert_Rotation_Mode_v1-4-1.zip"
+pause
