@@ -154,6 +154,8 @@ def convert_frame_rotation(
     current_frame = context.scene.frame_current
     bone_name = bone.name
 
+    logger.debug(f" # Frame {current_frame}")
+
     # Set to original rmode and keyframe it
     bone.rotation_mode = original_rmode
     dprint(f" |  |  # '{bone_name}' Rmode set to {bone.rotation_mode}")
@@ -173,27 +175,30 @@ def convert_frame_rotation(
     )
     dprint(f" |  |  # Rmode set to {bone.rotation_mode}")
 
-    # Convert and apply the rotation to the new mode
+    # Convert and apply the rotation to the new mode and keyframe rotations
     if target_rmode == 'QUATERNION':
         bone.rotation_quaternion = rot_matrix.to_quaternion()
+        bone.keyframe_insert(data_path="rotation_quaternion")
     elif target_rmode == 'AXIS_ANGLE':
         quat = rot_matrix.to_quaternion()
         axis, angle = quat.to_axis_angle()
         # bone.rotation_axis_angle expects [angle, axis_x, axis_y, axis_z]
         bone.rotation_axis_angle = [angle, axis.x, axis.y, axis.z]
+        bone.keyframe_insert(data_path="rotation_axis_angle")
     else:  # Euler modes (XYZ, XZY, YXZ, YZX, ZXY, ZYX)
         bone.rotation_euler = rot_matrix.to_euler(target_rmode)
+        bone.keyframe_insert(data_path="rotation_euler")
 
     # Keyframe all rotation properties
-    rotation_paths = [
-        "rotation_axis_angle",
-        "rotation_euler",
-        "rotation_mode",
-        "rotation_quaternion",
-    ]
-    for path in rotation_paths:
-        bone.keyframe_insert(data_path=path)
-    dprint(f" |  |  # Keyframed '{bone_name}' rotations")
+    # rotation_paths = [
+    #     "rotation_axis_angle",
+    #     "rotation_euler",
+    #     "rotation_mode",
+    #     "rotation_quaternion",
+    # ]
+    # for path in rotation_paths:
+    #     bone.keyframe_insert(data_path=path)
+    logger.debug(f" |  # Keyframed '{bone_name}' rotations")
 
 
 def process_bone_conversion(context: Context, bone: PoseBone) -> None:
