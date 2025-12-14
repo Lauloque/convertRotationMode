@@ -144,11 +144,7 @@ def setup_initial_keyframe(bone: PoseBone, first_frame: float) -> str:
     return original_rmode
 
 
-def convert_frame_rotation(
-    context: Context,
-    bone: PoseBone,
-    original_rmode: str
-) -> None:
+def convert_frame_rotation(context: Context, bone: PoseBone, original_rmode: str) -> None:
     """Convert rotation mode for a single frame."""
     target_rmode = context.scene.CRM_Properties.targetRmode
     current_frame = context.scene.frame_current
@@ -163,41 +159,58 @@ def convert_frame_rotation(
     bone.keyframe_insert("rotation_mode", frame=current_frame, group=bone_name)
     context.scene.frame_set(current_frame)
     logger.debug(f" |  # '{bone_name}' Rmode set to {bone.rotation_mode}")
+    
+    # Log world matrix BEFORE conversion
+    world_matrix_before = bone.matrix.copy()
+    logger.debug(f" |  # BEFORE conversion:")
+    for line in str(world_matrix_before).split('\n'):
+        logger.debug(f" |  |  {line}")
+    logger.debug(f" |  |  Rotation mode: {bone.rotation_mode}")
 
     # Store current rotation matrix
     rot_matrix = bone.matrix_basis.to_3x3()
-    dprint(
-        f" |  |  # Stored '{bone_name}' rotation matrix as {original_rmode}"
-    )
+    for line in str(rot_matrix).split('\n'):
+        logger.debug(f" |  |  {line}")
+    logger.debug(f" |  # Stored '{bone_name}' rotation matrix as {original_rmode}")
 
     # Set to target rmode, and keyframe it
     bone.rotation_mode = target_rmode
     bone.keyframe_insert("rotation_mode", frame=current_frame, group=bone_name)
-    dprint(f" |  |  # Rmode set to {bone.rotation_mode}")
+    logger.debug(f" |  # Rmode set to {bone.rotation_mode}")
 
     # Convert and apply the rotation to the new mode and keyframe rotations
     if target_rmode == 'QUATERNION':
         bone.rotation_quaternion = rot_matrix.to_quaternion()
+        logger.debug(f" |  |  Converted to quaternion: {bone.rotation_quaternion}")
         bone.keyframe_insert(data_path="rotation_quaternion")
     elif target_rmode == 'AXIS_ANGLE':
         quat = rot_matrix.to_quaternion()
         axis, angle = quat.to_axis_angle()
         # bone.rotation_axis_angle expects [angle, axis_x, axis_y, axis_z]
         bone.rotation_axis_angle = [angle, axis.x, axis.y, axis.z]
+        logger.debug(f" |  |  Converted to axis-angle: {bone.rotation_axis_angle}")
         bone.keyframe_insert(data_path="rotation_axis_angle")
     else:  # Euler modes (XYZ, XZY, YXZ, YZX, ZXY, ZYX)
         bone.rotation_euler = rot_matrix.to_euler(target_rmode)
+        logger.debug(f" |  |  Converted to euler: {bone.rotation_euler}")
         bone.keyframe_insert(data_path="rotation_euler")
+    
+    # Log world matrix AFTER conversion
+    world_matrix_after = bone.matrix.copy()
+    logger.debug(f" |  # AFTER conversion:")
+    for line in str(world_matrix_after).split('\n'):
+        logger.debug(f" |  |  {line}")
+    logger.debug(f" |  |  Rotation mode: {bone.rotation_mode}")
+    
+    # Check if matrices match (simplified calculation)
+    diff_matrix = world_matrix_before - world_matrix_after
+    matrix_diff = sum(val**2 for row in diff_matrix for val in row) ** 0.5
+    if matrix_diff > 0.0001:
+        logger.warning(f" |  |  MISMATCH! Matrix difference: {matrix_diff}")
+    else:
+        logger.debug(f" |  |  Matrices match (diff: {matrix_diff})")
 
-    # Keyframe all rotation properties
-    # rotation_paths = [
-    #     "rotation_axis_angle",
-    #     "rotation_euler",
-    #     "rotation_mode",
-    #     "rotation_quaternion",
-    # ]
-    # for path in rotation_paths:
-    #     bone.keyframe_insert(data_path=path)
+    
     logger.debug(f" |  # Keyframed '{bone_name}' rotations")
 
 
