@@ -10,6 +10,24 @@ from .bl_logger import logger
 #     finish_progress,
 # )
 
+BLENDER_5_0_OR_LATER = bpy.app.version >= (5, 0, 0)
+
+
+def get_bone_select(pose_bone: PoseBone) -> bool:
+    """Get selection state of a bone for either Blender 4.5 or 5.0+"""
+    if BLENDER_5_0_OR_LATER:
+        return pose_bone.select
+    else:
+        return pose_bone.bone.select
+
+
+def set_bone_select(pose_bone: PoseBone, value: bool) -> None:
+    """Set selection state of a bone for either Blender 4.5 or 5.0+"""
+    if BLENDER_5_0_OR_LATER:
+        pose_bone.select = value
+    else:
+        pose_bone.bone.select = value
+
 
 def dprint(message: str) -> None:
     """Prints in the system console if the addon's developer printing is ON"""
@@ -59,7 +77,7 @@ def get_list_frames(bone: Bone) -> List[float]:
 def deselect_all_bones() -> None:
     """Deselect all bones"""
     for bone in bpy.context.selected_pose_bones:
-        bone.select = False
+        set_bone_select(bone, False)
 
 
 def get_rotation_locks(bone: PoseBone) -> List[bool]:
@@ -107,7 +125,7 @@ def setup_bone_for_conversion(context: Context, bone: PoseBone) -> None:
     deselect_all_bones()
     # Use bone.bone to avoid ArmatureBones.active expects a Bone, not PoseBone
     context.object.data.bones.active = bone.bone
-    bone.select = True
+    set_bone_select(bone, True)
     logger.debug(f"### Working on bone '{bone.name}' ###")
 
 
@@ -337,7 +355,7 @@ def restore_initial_state(context: Context) -> None:
                 bone_name_str = str(bone_name)
                 dprint(f"Trying to select bone: '{bone_name_str}'")
                 if bone_name_str in pose_bones:
-                    pose_bones[bone_name_str].select = True
+                    set_bone_select(pose_bones[bone_name_str], True)
 
         # Set active bone by name
         if initial_active_bone_name:
@@ -364,6 +382,6 @@ def is_any_pose_bone_selected() -> bool:
 
     for obj in bpy.context.selected_objects:
         if obj.type == 'ARMATURE' and obj.mode == 'POSE':
-            if obj.pose and any(bone.select for bone in obj.pose.bones):
+            if obj.pose and any(get_bone_select(bone) for bone in obj.pose.bones):
                 return True
     return False
