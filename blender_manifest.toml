@@ -71,4 +71,5 @@ paths_exclude_pattern = [
   "*.blend*",
   "*.pyc",
   "*.txt",
+  "*.md",
 ]
