@@ -56,13 +56,21 @@ def get_list_frames(bone: Bone) -> List[float]:
 
     ad = armature.animation_data
     slot = ad.action_slot
-    bag = anim_utils.action_ensure_channelbag_for_slot(ad.action, slot)
+
+    if BLENDER_5_0_OR_LATER:
+        bag = anim_utils.action_ensure_channelbag_for_slot(ad.action, slot)
+    else:
+        bag = anim_utils.action_get_channelbag_for_slot(ad.action, slot)
+        if bag == None:
+            return list_frames
+
+
     fcurves = bag.fcurves
 
     for curve in fcurves:
         # skip non-rotation curves
         if "rotation" not in curve.data_path:
-            pass
+            continue
 
         keyframe_points = curve.keyframe_points
 
