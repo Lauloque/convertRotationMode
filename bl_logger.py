@@ -20,6 +20,7 @@ Compatible with Blender 4.2+ extensions and traditional addons.
 import logging
 import os
 import inspect
+import bpy
 
 # ANSI color codes - using bright colors for better visibility in Blender
 COLORS = {
@@ -66,7 +67,7 @@ logger = logging.getLogger(logger_name)
 
 # Only setup if not already configured - prevents duplicate handlers
 if not logger.handlers:
-    logger.setLevel(logging.DEBUG)
+    logger.setLevel(logging.CRITICAL + 1)
     handler = logging.StreamHandler()
     formatter = ColoredFormatter(
         "[%(name)s][%(levelname)-8s]  %(message)s (%(filename)s:%(lineno)d)"

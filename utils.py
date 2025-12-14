@@ -15,7 +15,8 @@ def dprint(message: str) -> None:
     """Prints in the system console if the addon's developer printing is ON"""
     prefs = bpy.context.preferences.addons[__package__].preferences
     if prefs.developer_print:
-        print(f"[Convert Rot Mode]: {message}")
+        # print(f"[Convert Rot Mode]: {message}")
+        logger.debug(message)
 
 
 def get_list_frames(bone: Bone) -> List[float]:
