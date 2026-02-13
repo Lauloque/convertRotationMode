@@ -6,6 +6,12 @@
 
 *Convert Rotation Mode* (*CRM*) is an addon for Blender that allows you to change the rotation mode of the selected bones and preserve the animation or poses you already made.
 
+> [!NOTE]
+> 
+> Blender is working on a native operator to convert rotation mode, written in C.
+> Depending on the implementation, this addon may become entirely obsolete (I hope so!), or drastically change to become a convenience GUI to regroup commonly used options and operations together.  See the developemnt conversation on Blender's tracker:  
+> [#154309 - WIP: Anim: Convert animation between rotation modes - blender - Blender Projects](https://projects.blender.org/blender/blender/pulls/154309#issuecomment-1846456)
+
 ![feature image](Prez/Feature.png)
 
 ## Installation
