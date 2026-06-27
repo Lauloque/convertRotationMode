@@ -6,33 +6,80 @@ labels: ''
 
 ---
 
-**System Information**
-Operating system:
-Graphics card:
+# Bug Report
 
-**Blender Version**
-Broken:
-(example: 2.79b release)
-(example: 2.80, edbf15d3c044, blender2.8, 2018-11-28, as found on the splash screen)
-Worked: (optional)
+> [!IMPORTANT]
+> **If possible, attach a small `.blend` file that reproduces the issue.**
+>
+> A simplified test file is usually much more helpful than a long description, and is crucial if the issue only happens with a specific project. Please include the smallest version of it that still reproduces the bug.
 
-**Addon Version**
-Broken:
-(example: 1.5.0)
-Worked: (optional)
+## Checklist
 
-**Short description of error**
-[Please fill out a short description of the error here]
+* [ ] I searched existing issues. (Bugs with different error messages should be different issues)
+* [ ] I am using the latest released version of the addon.
+* [ ] I attached a sample `.blend` file, **or** this issue reproduces in a new Blender file.
 
-**Exact steps for others to reproduce the error**
-[Please describe the exact steps needed to reproduce the issue]
-[Based on the default startup or an attached .blend file (as simple as possible)]
-[Find steps to redo the bug consistently, and include a small and simple .blend file to demonstrate the bug.]
+---
 
-**Dev log:**
-[Optional but I'll probably ask it most of the time anyway.]
-[Open a new Blender. Enable the "Dev log" in the addon's preferences, then use the menu Window > Toggle System Console. Reproduce the issue, and copy the console's content, and paste it below, or save it as a text file if it's too big and join it to the ticket]
+## System Information
 
-```py
-paste log here
+|                            |   |
+| -------------------------- | - |
+| Operating System           |   |
+| Blender Version            |   |
+| Addon Version              |   |
+| Graphics Card *(optional)* |   |
+
+---
+
+## Expected behavior
+
+<!-- What did you expect to happen? -->
+
+---
+
+## Actual behavior
+
+<!-- What happened instead? -->
+
+---
+
+## Steps to reproduce
+
+<!--
+Describe the exact steps needed to reproduce the issue.
+
+If possible, start from Blender's default startup file.
+If not, attach a small `.blend` file that demonstrates the problem.
+-->
+
+1.
+2.
+3.
+
+---
+
+## Additional files
+
+<!-- Drag and drop files here if needed. -->
+
+* Sample `.blend`:
+* Screenshots:
+* Videos:
+* Other files:
+
+---
+
+## Developer Log (optional)
+
+> [!NOTE]
+> This is **optional**. If you're comfortable running Blender from a terminal or console:
+>
+> 1. Enable **Developer Log** in the addon's preferences.
+> 2. Start Blender from a terminal/console (or use Blender's System Console on Windows).
+> 3. Reproduce the issue.
+> 4. Paste the log below, or attach it as a `.txt` file if it's very long.
+
+```text
 ```
+
