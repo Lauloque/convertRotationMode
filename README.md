@@ -42,7 +42,7 @@ See the [Blender 5.3 release notes](https://developer.blender.org/docs/release_n
 
 - Browse the zip file you downloaded.
 
-## Usage (Blender 5.2 and older)
+## Usage
 
 ![demo basic function](./Prez/demo_basic_function.gif)
 
