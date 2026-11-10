@@ -6,7 +6,12 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$SCRIPT_DIR/.." || exit 1
 
 # Now run the command with correct relative paths
-/home/lauloque/Apps/Graphics/BlenderLauncher/stable/blender-5.0.0-stable.a37564c4df7a/blender --factory-startup --command extension build --source-dir "." --output-dir "Releases"
+if ! command -v blender >/dev/null 2>&1; then
+    echo "Error: 'blender' was not found in PATH."
+    exit 1
+fi
+
+blender --factory-startup --command extension build --source-dir "." --output-dir "Releases"
 
 echo "Press enter to continue..."
 read
